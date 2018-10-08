@@ -11,9 +11,7 @@ You can optionally configure Tommy to upload all your processed assets to a S3 b
 - `jpg, jpeg` will be converted with `imagemagick` and optimized with `jpegoptim`
 - `png` will be converted with `imagemagick` and optimized with `pngquant`
 - `gif` will be optimized with`gifsicle`
-- `mov, avi` will be converted to `mp4, ogg, webm` using `ffmpeg`
-- `mp4` will be converted to `ogg, web` using `ffmpeg`
-- `ogg` will be converted to `mp4, web` using `ffmpeg`
+- _video files_ will be converted to `mp4, webm` using `ffmpeg`
 
 All other static assets will be just copied and untouched.
 

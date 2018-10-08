@@ -170,17 +170,11 @@ async function processFiles(files) {
 				} else if (/\.gif$/i.test(filepath)) {
 					await processGIF(filepath);
 
-				} else if (/\.(mov|avi|m4v|3gp|m2v)$/i.test(filepath)) {
+				} else if (/\.(mov|avi|m4v|3gp|m2v|ogg)$/i.test(filepath)) {
 					await convertToMP4(filepath);
 					await convertToWEBM(filepath);
-					await convertToOGG(filepath);
 
 				} else if (/\.(mp4)$/i.test(filepath)) {
-					await convertToOGG(filepath);
-					await convertToWEBM(filepath);
-
-				} else if (/\.(ogg)$/i.test(filepath)) {
-					await convertToMP4(filepath);
 					await convertToWEBM(filepath);
 
 				}
@@ -276,19 +270,6 @@ async function convertToMP4(filepath) {
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to MP4 <${filepath}>`);
-	await execPromise(`ffmpeg -y \
-      -i "${filepath}" \
-      -preset fast \
-      "${dst_path}" \
-		-hide_banner`);
-	return dst_path;
-}
-
-async function convertToOGG(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, '.ogg');
-	await overwriteProtection(filepath, dst_path);
-
-	console.debug(`Converting to OGG <${filepath}>`);
 	await execPromise(`ffmpeg -y \
       -i "${filepath}" \
       -preset fast \

@@ -5,7 +5,7 @@ VOLUME "/dst"
 WORKDIR /app
 ENTRYPOINT "/app/entrypoint.sh"
 
-RUN apt-get -y update && apt-get -y install software-properties-common && apt-get -y update
+RUN apt-get -y update 
 
 RUN apt-get -y install imagemagick
 RUN apt-get -y install jpegoptim 
