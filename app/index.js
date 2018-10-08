@@ -1,27 +1,30 @@
-require('console-ultimate/global').replace();
+require("console-ultimate/global").replace();
 
-const fs = require('fs');
-const exec = require('child_process').exec;
-const sqlite3 = require('sqlite3').verbose();
-const find = require('find');
-const path = require('path');
-const md5 = require('md5-file');
-const sizeOf = require('image-size');
+const fs = require("fs");
+const exec = require("child_process").exec;
+const sqlite3 = require("sqlite3").verbose();
+const find = require("find");
+const path = require("path");
+const md5 = require("md5-file");
+const sizeOf = require("image-size");
 
-let config = require('./config.json');
+let config = require("./config.json");
 
-const __src = process.env.SRC_DIR || '/src';
-const __dst = process.env.DST_DIR || '/dst';
-const SQLITE_FILE = 'assets.db';
+const __src = process.env.SRC_DIR || "/src";
+const __dst = process.env.DST_DIR || "/dst";
+const SQLITE_FILE = "assets.db";
 
 if (__src == null || __dst == null) {
-	throw new Error('__src or __dst null');
+	throw new Error("__src or __dst null");
 }
 
 let db;
 
 function getExtension(filename) {
-	return filename.split('.').slice(0, -1).join('.');
+	return filename
+		.split(".")
+		.slice(0, -1)
+		.join(".");
 }
 
 async function execPromise(command) {
@@ -36,15 +39,18 @@ async function execPromise(command) {
 
 function getFileHash(file) {
 	const filepath = path.join(__src, file);
-	return config.version + '-' + md5.sync(filepath);
+	return config.version + "-" + md5.sync(filepath);
 }
 
 async function createDatabase() {
 	return new Promise(resolve => {
 		db = new sqlite3.Database(path.join(__src, SQLITE_FILE));
-		db.run("CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))", () => {
-			resolve();
-		});
+		db.run(
+			"CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))",
+			() => {
+				resolve();
+			}
+		);
 	});
 }
 
@@ -60,7 +66,7 @@ async function hasBeenConvertedTo(file, format) {
 
 async function indexFile(file) {
 	return new Promise((resolve, reject) => {
-		const fetch_stmt = db.prepare('SELECT * FROM files WHERE file = ?');
+		const fetch_stmt = db.prepare("SELECT * FROM files WHERE file = ?");
 		const hash = getFileHash(file);
 
 		fetch_stmt.get([file], (err, row) => {
@@ -76,14 +82,16 @@ async function indexFile(file) {
 
 async function markFileAsProcessed(file) {
 	return new Promise(resolve => {
-		const insert_stmt = db.prepare('REPLACE INTO files (file, hash) VALUES (?, ?)');
+		const insert_stmt = db.prepare(
+			"REPLACE INTO files (file, hash) VALUES (?, ?)"
+		);
 		const hash = getFileHash(file);
 		insert_stmt.run([file, hash], resolve);
 	});
 }
 
 async function markFilesAsProcessed(files) {
-	return new Promise(async (resolve) => {
+	return new Promise(async resolve => {
 		for (let file of files) {
 			await markFileAsProcessed(file);
 		}
@@ -94,9 +102,9 @@ async function markFilesAsProcessed(files) {
 async function indexFiles() {
 	return new Promise(resolve => {
 		let files_to_process = [];
-		find.file(__src, async (files) => {
+		find.file(__src, async files => {
 			for (let filepath of files) {
-				const file = filepath.replace(__src, '');
+				const file = filepath.replace(__src, "");
 				if (filepath === path.join(__src, SQLITE_FILE)) continue;
 
 				let should_process = await indexFile(file);
@@ -126,7 +134,7 @@ async function copyFile(file) {
 }
 
 async function copyFiles(files) {
-	return new Promise(async (resolve) => {
+	return new Promise(async resolve => {
 		for (let file of files) {
 			await copyFile(file);
 		}
@@ -139,7 +147,6 @@ async function processFiles(files) {
 		const processed_files = [];
 		for (let file of files) {
 			try {
-
 				console.info(`Processing <${file}>`);
 
 				const filepath = await copyFile(file);
@@ -151,6 +158,7 @@ async function processFiles(files) {
 					}
 
 					await processImage(filepath);
+					await processJPG(filepath);
 
 					const webp_file = await convertToWEBP(filepath);
 					await resizeImage(webp_file);
@@ -170,12 +178,17 @@ async function processFiles(files) {
 				} else if (/\.gif$/i.test(filepath)) {
 					await processGIF(filepath);
 
+				} else if (/\.svg$/i.test(filepath)) {
+					await processSVG(filepath);
+
 				} else if (/\.(mov|avi|m4v|3gp|m2v|ogg)$/i.test(filepath)) {
 					await convertToMP4(filepath);
 					await convertToWEBM(filepath);
+					await extractPoster(filepath);
 
 				} else if (/\.(mp4)$/i.test(filepath)) {
 					await convertToWEBM(filepath);
+					await extractPoster(filepath);
 
 				}
 
@@ -183,7 +196,6 @@ async function processFiles(files) {
 
 				await markFileAsProcessed(file);
 				processed_files.push(file);
-
 			} catch (err) {
 				console.error(`Error in processing ${file}: ${err}`);
 			}
@@ -204,14 +216,17 @@ async function resizeImage(filepath) {
 			console.debug(`Resizing image <${filepath}> to <${dst_path}>`);
 
 			try {
-				await execPromise(`convert "${filepath}" -strip -quality 80 -resize "${px}^>" "${dst_path}"`);
+				await execPromise(
+					`convert "${filepath}" -strip -quality 80 -resize "${px}^>" "${dst_path}"`
+				);
 				resized_images.push(dst_path);
 			} catch (err) {
-				console.error(`Error during resizing to ${px} of <${filepath}>`)
+				console.error(`Error during resizing to ${px} of <${filepath}>`);
 			}
-
 		} else {
-			console.debug(`Skipping resizing to ${px} of <${filepath}> because ${px} is greater than image largest side (${largest_side})`);
+			console.debug(
+				`Skipping resizing to ${px} of <${filepath}> because ${px} is greater than image largest side (${largest_side})`
+			);
 		}
 	}
 
@@ -249,24 +264,26 @@ async function processGIF(filepath) {
 async function overwriteProtection(filepath, dst_path) {
 	const src_path = dst_path.replace(__dst, __src);
 	if (fs.existsSync(src_path)) {
-		throw new Error(`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`);
+		throw new Error(
+			`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`
+		);
 	}
 	return true;
 }
 
 async function convertToWEBP(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, '.webp');
+	const dst_path = filepath.replace(/\..+$/g, ".webp");
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to WEBP <${filepath}>`);
-	await execPromise(`cwebp 
+	await execPromise(`cwebp \
 	"${filepath}" \
 	-o "${dst_path}"`);
 	return dst_path;
 }
 
 async function convertToMP4(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, '.mp4');
+	const dst_path = filepath.replace(/\..+$/g, ".mp4");
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to MP4 <${filepath}>`);
@@ -279,7 +296,7 @@ async function convertToMP4(filepath) {
 }
 
 async function convertToWEBM(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, '.webm');
+	const dst_path = filepath.replace(/\..+$/g, ".webm");
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to WEBM <${filepath}>`);
@@ -291,12 +308,41 @@ async function convertToWEBM(filepath) {
 	return dst_path;
 }
 
+async function extractPoster(filepath) {
+	const dst_path = filepath.replace(/\..+$/g, "-poster.jpg");
+
+	console.debug(`Extracting poster of <${filepath}> to <${dst_path}>`);
+	await execPromise(`ffmpeg -y \
+	-i "${filepath}" \
+	-vframes 1 \
+	-f image2 \
+	"${dst_path}"`);
+
+	await processImage(dst_path);
+	await processJPG(dst_path);
+	await convertToWEBP(dst_path);
+
+	return dst_path;
+}
+
+async function processSVG(filepath) {
+	const dst_path = filepath;
+
+	console.debug(`Optimizing SVG <${filepath}>`);
+	await execPromise(`svgo \
+	"${filepath}" \
+	-o "${dst_path}"`);
+
+	return dst_path;
+}
 
 (async function main() {
-
 	if (process.argv[2]) {
 		console.info(`Extending configuration with file <${process.argv[1]}>`);
-		config = Object.assign(config, require(path.join(process.cwd(), process.argv[2])));
+		config = Object.assign(
+			config,
+			require(path.join(process.cwd(), process.argv[2]))
+		);
 	}
 
 	console.debug(config);
@@ -308,5 +354,4 @@ async function convertToWEBM(filepath) {
 
 	db.close();
 	process.exit(0);
-
 })();

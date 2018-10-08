@@ -10,10 +10,13 @@ You can optionally configure Tommy to upload all your processed assets to a S3 b
 
 - `jpg, jpeg` will be converted with `imagemagick` and optimized with `jpegoptim`
 - `png` will be converted with `imagemagick` and optimized with `pngquant`
-- `gif` will be optimized with`gifsicle`
-- _video files_ will be converted to `mp4, webm` using `ffmpeg`
+- `gif` will be optimized with `gifsicle`
+- `svg` will be optimized with `svgo`
 
-All other static assets will be just copied and untouched.
+- _JPG/PNG files_ will be resized and optimized in multiple images
+- _video files_ will be converted to `mp4, webm` using `ffmpeg` and a poster will be extracted
+
+- _All other static assets_ will be just copied and remain untouched.
 
 ## How to: run with Docker
 
