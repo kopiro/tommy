@@ -22,6 +22,7 @@
   "dependencies": {
     "console-ultimate": "^2.9.0",
     "find": "^0.2.9",
+    "image-size": "^0.6.3",
     "md5-file": "^4.0.0",
     "sqlite3": "^4.0.2"
   }

@@ -11,7 +11,7 @@ You can optionally configure Tommy to upload all your processed assets to a S3 b
 - `jpg, jpeg` will be converted with `imagemagick` and optimized with `jpegoptim`
 - `png` will be converted with `imagemagick` and optimized with `pngquant`
 - `gif` will be optimized with`gifsicle`
-- `mov, avi` will be converted to `mp4, ogg, web` using `ffmpeg`
+- `mov, avi` will be converted to `mp4, ogg, webm` using `ffmpeg`
 - `mp4` will be converted to `ogg, web` using `ffmpeg`
 - `ogg` will be converted to `mp4, web` using `ffmpeg`
 
@@ -28,8 +28,8 @@ kopiro/tommy
 
 Please note that:
 
-`${ABSPATH_TO_SRC_DIRECTORY}` is the path of your original assets.
-`${ABSPATH_TO_DEST_DIRECTORY}` is the path where you want processed files.
+- `${ABSPATH_TO_SRC_DIRECTORY}` is the path of your original assets.
+- `${ABSPATH_TO_DEST_DIRECTORY}` is the path where you want processed files.
 
 ## How to: run in MacOS
 

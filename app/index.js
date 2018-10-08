@@ -6,11 +6,13 @@ const sqlite3 = require('sqlite3').verbose();
 const find = require('find');
 const path = require('path');
 const md5 = require('md5-file');
+const sizeOf = require('image-size');
 
-const VERSION = 'v2';
+let config = require('./config.json');
 
 const __src = process.env.SRC_DIR || '/src';
 const __dst = process.env.DST_DIR || '/dst';
+const SQLITE_FILE = 'assets.db';
 
 if (__src == null || __dst == null) {
    throw new Error('__src or __dst null');
@@ -33,12 +35,12 @@ async function execPromise(command) {
 
 function getFileHash(file) {
    const filepath = path.join(__src, file);
-   return VERSION + '-' + md5.sync(filepath);
+   return config.version + '-' + md5.sync(filepath);
 }
 
 async function createDatabase() {
    return new Promise(resolve => {
-      db = new sqlite3.Database(path.join(__src, 'assets.db'));
+      db = new sqlite3.Database(path.join(__src, SQLITE_FILE));
       db.run("CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))", () => {
          resolve();
       });
@@ -73,7 +75,7 @@ async function indexFile(file) {
 
 async function markFileAsProcessed(file) {
    return new Promise(resolve => {
-      const insert_stmt = db.prepare('INSERT OR REPLACE INTO files (file, hash) VALUES (?, ?)');
+      const insert_stmt = db.prepare('REPLACE INTO files (file, hash) VALUES (?, ?)');
       const hash = getFileHash(file);
       insert_stmt.run([file, hash], resolve);
    });
@@ -94,10 +96,12 @@ async function indexFiles() {
       find.file(__src, async (files) => {
          for (let filepath of files) {
             const file = filepath.replace(__src, '');
+            if (filepath === path.join(__src, SQLITE_FILE)) continue;
+
             let should_process = await indexFile(file);
-            if (should_process) {
-               files_to_process.push(file);
-            }
+            if (!should_process) continue;
+
+            files_to_process.push(file);
          }
          resolve(files_to_process);
       });
@@ -105,17 +109,19 @@ async function indexFiles() {
 }
 
 async function copyFile(file) {
-   console.log('Copying ' + file);
-
    const dir = path.dirname(file);
    const filepath = path.join(__src, file);
    const filename = path.basename(file);
    const dst_dir = path.join(__dst, dir);
    const dst_file = path.join(dst_dir, filename);
 
+   console.debug(`Copying <${filepath}> to <${dst_file}>`);
+
    // Create directory of file
    await execPromise(`/bin/mkdir -p "${dst_dir}"`);
-   return execPromise(`/bin/cp -v "${filepath}" "${dst_file}"`);
+   await execPromise(`/bin/cp -v "${filepath}" "${dst_file}"`);
+
+   return dst_file;
 }
 
 async function copyFiles(files) {
@@ -133,19 +139,32 @@ async function processFiles(files) {
       for (let file of files) {
          try {
 
-            let did_work = true;
+            console.info(`Processing <${file}>`);
 
-            const filepath = path.join(__dst, file);
+            const filepath = await copyFile(file);
 
             if (/\.(jpg|jpeg)$/i.test(filepath)) {
+               const resized_files = await resizeImage(filepath);
+               for (let e of resized_files) {
+                  await processJPG(e);
+               }
+
                await processImage(filepath);
-               await processJPG(filepath);
-               await convertToWEBP(filepath);
+
+               const webp_file = await convertToWEBP(filepath);
+               await resizeImage(webp_file);
 
             } else if (/\.png$/i.test(filepath)) {
+               const resized_files = await resizeImage(filepath);
+               for (let e of resized_files) {
+                  await processPNG(e);
+               }
+
                await processImage(filepath);
                await processPNG(filepath);
-               await convertToWEBP(filepath);
+
+               const webp_file = await convertToWEBP(filepath);
+               await resizeImage(webp_file);
 
             } else if (/\.gif$/i.test(filepath)) {
                await processGIF(filepath);
@@ -163,14 +182,11 @@ async function processFiles(files) {
                await convertToMP4(filepath);
                await convertToWEBM(filepath);
 
-            } else {
-               did_work = false;
             }
 
-            if (did_work) {
-               console.log(`Successfully processed: ${file}`);
-            }
+            console.info(`Successfully processed <${file}>`);
 
+            await markFileAsProcessed(file);
             processed_files.push(file);
 
          } catch (err) {
@@ -181,45 +197,78 @@ async function processFiles(files) {
    });
 }
 
+async function resizeImage(filepath) {
+   const resized_images = [];
+
+   const size = sizeOf(filepath);
+   const largest_side = Math.max(size.width, size.height);
+
+   for (let px of config.resize) {
+      if (px < largest_side) {
+         const dst_path = filepath.replace(/\.(.+)$/g, `-resized-${px}.$1`);
+         console.debug(`Resizing image <${filepath}> to <${dst_path}>`);
+
+         try {
+            await execPromise(`convert "${filepath}" -strip -quality 80 -resize "${px}^>" "${dst_path}"`);
+            resized_images.push(dst_path);
+         } catch (err) {
+            console.error(`Error during resizing to ${px} of <${filepath}>`)
+         }
+
+      } else {
+         console.debug(`Skipping resizing to ${px} of <${filepath}> because ${px} is greater than image largest side (${largest_side})`);
+      }
+   }
+
+   return resized_images;
+}
+
 async function processImage(filepath) {
-   console.log(`Processing image <${filepath}>`);
-   return execPromise(`convert "${filepath}" -strip -quality 80 "${filepath}"`);
+   const dst_path = filepath;
+   console.debug(`Stripping image <${filepath}>`);
+   return execPromise(`convert "${filepath}" -strip -quality 80 "${dst_path}"`);
 }
 
 async function processJPG(filepath) {
-   console.log(`Optimizing JPEG <${filepath}>`);
+   const dst_path = filepath;
+   console.debug(`Optimizing JPEG <${filepath}>`);
    return execPromise(`jpegoptim "${filepath}"`);
 }
 
 async function processPNG(filepath) {
-   console.log(`Optimizing PNG <${filepath}>`);
+   const dst_path = filepath;
+   console.debug(`Optimizing PNG <${filepath}>`);
    return execPromise(`pngquant --ext .png --force "${filepath}"`);
 }
 
 async function processGIF(filepath) {
-   console.log(`Optimizing GIF <${filepath}>`);
-   return execPromise(`gifsicle -O2 "${filepath}" -o "${filepath}"`);
+   const dst_path = filepath;
+   console.debug(`Optimizing GIF <${filepath}>`);
+   return execPromise(`gifsicle -O2 "${filepath}" -f -o "${dst_path}"`);
+}
+
+async function overwriteProtection(filepath, dst_path) {
+   const src_path = dst_path.replace(__dst, __src);
+   if (fs.existsSync(src_path)) {
+      throw new Error(`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`);
+   }
+   return true;
 }
 
 async function convertToWEBP(filepath) {
    const dst_path = filepath.replace(/\..+$/g, '.webp');
-   const src_path = dst_path.replace(__dst, __src);
-   if (fs.existsSync(src_path)) {
-      throw new Error(`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`);
-   }
+   await overwriteProtection(filepath, dst_path);
 
-   console.log(`Converting to WEBP <${filepath}>`);
-   return execPromise(`cwebp "${filepath}" -o "${dst_path}"`);
+   console.debug(`Converting to WEBP <${filepath}>`);
+   await execPromise(`cwebp "${filepath}" -o "${dst_path}"`);
+   return dst_path;
 }
 
 async function convertToMP4(filepath) {
    const dst_path = filepath.replace(/\..+$/g, '.mp4');
-   const src_path = dst_path.replace(__dst, __src);
-   if (fs.existsSync(src_path)) {
-      throw new Error(`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`);
-   }
+   await overwriteProtection(filepath, dst_path);
 
-   console.log(`Converting to MP4 <${filepath}>`);
+   console.debug(`Converting to MP4 <${filepath}>`);
    return execPromise(`ffmpeg \
       -i "${filepath}" \
       -f mp4 \
@@ -233,12 +282,9 @@ async function convertToMP4(filepath) {
 
 async function convertToOGG(filepath) {
    const dst_path = filepath.replace(/\..+$/g, '.ogg');
-   const src_path = dst_path.replace(__dst, __src);
-   if (fs.existsSync(src_path)) {
-      throw new Error(`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`);
-   }
+   await overwriteProtection(filepath, dst_path);
 
-   console.log(`Converting to OGG <${filepath}>`);
+   console.debug(`Converting to OGG <${filepath}>`);
    return execPromise(filepath, `ffmpeg \
    -i "${filepath}" \
    "${dst_path}" \
@@ -247,12 +293,9 @@ async function convertToOGG(filepath) {
 
 async function convertToWEBM(filepath) {
    const dst_path = filepath.replace(/\..+$/g, '.webm');
-   const src_path = dst_path.replace(__dst, __src);
-   if (fs.existsSync(src_path)) {
-      throw new Error(`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`);
-   }
+   await overwriteProtection(filepath, dst_path);
 
-   console.log(`Converting to WEBM <${filepath}>`);
+   console.debug(`Converting to WEBM <${filepath}>`);
    return execPromise(`ffmpeg \
       -i "${filepath}" \
       "${dst_path}" \
@@ -262,13 +305,17 @@ async function convertToWEBM(filepath) {
 
 (async function main() {
 
+   if (process.argv[2]) {
+      console.info(`Extending configuration with file <${process.argv[1]}>`);
+      config = Object.assign(config, require(path.join(process.cwd(), process.argv[2])));
+   }
+
+   console.debug(config);
+
    await createDatabase();
 
    let files = await indexFiles();
-   await copyFiles(files);
-
-   let processed_files = await processFiles(files);
-   await markFilesAsProcessed(processed_files);
+   await processFiles(files);
 
    db.close();
    process.exit(0);
