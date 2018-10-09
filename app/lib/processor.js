@@ -72,7 +72,7 @@ async function processSVG(filepath) {
 async function processVideoThumbs(filepath) {
 	if (global.config.processor.videoThumbs == false) return false;
 
-	const dst_path = filepath.replace(/\..+$/g, '-thumb%03d.jpg');
+	const dst_path = filepath.replace(/\..+$/g, '-thumb-%03d.jpg');
 
 	console.debug(`Extracting thumbnails to <${dst_path}>`);
 

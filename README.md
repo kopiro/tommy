@@ -59,10 +59,10 @@ Example:
 
 ### `resize`
 
-| Key               | Type     | Description                        | Default            |
-| ----------------- | -------- | ---------------------------------- | ------------------ |
-| resize.dimensions | number[] | Dimensions of resized images in PX | [200,400,800,1200] |
-| resize.quality    | number   | Quality of images                  | 80                 |
+| Key               | Type     | Description                                       | Default            |
+| ----------------- | -------- | ------------------------------------------------- | ------------------ |
+| resize.dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200] |
+| resize.quality    | number   | Quality of images                                 | 80                 |
 
 ### `image`
 
