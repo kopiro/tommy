@@ -2,7 +2,35 @@
 	"version": "v1",
 	"remoteSync": false,
 	"s3Bucket": null,
-	"resize": [200, 400, 800],
+	"execDebug": false,
+	"processor": {
+		"resize": true,
+		"image": true,
+		"poster": true,
+		"jpg": true,
+		"png": true,
+		"gif": true,
+		"svg": true,
+		"lazyLoadBlurried": true,
+		"videoThumbs": true
+	},
+	"converter": {
+		"mp4": true,
+		"webm": true,
+		"webp": true
+	},
+	"resize": {
+		"dimensions": [200, 400, 800, 1200],
+		"quality": "80"
+	},
+	"image": {
+		"quality": "80"
+	},
+	"videoThumbs": {
+		"resize": "200x",
+		"quality": "80",
+		"fps": "1/60"
+	},
 	"ignore": [
 		".DS_Store",
 		".gitignore"

@@ -7,7 +7,8 @@ const sqlite3 = require('sqlite3').verbose();
 const find = require('find');
 const path = require('path');
 const md5 = require('md5-file');
-const argv = require('yargs').argv
+const argv = require('yargs').argv;
+const objectAssignDeep = require('object-assign-deep');
 const pack = require('./package.json');
 
 const util = require('./lib/util');
@@ -45,14 +46,15 @@ async function createDatabase() {
 
 async function indexFile(file) {
 	return new Promise((resolve, reject) => {
+		if (global.config.force) return resolve(true);
+
 		const fetch_stmt = global.db.prepare('SELECT * FROM files WHERE file = ?');
 		const hash = getFileHash(file);
 
 		fetch_stmt.get([file], (err, row) => {
 			if (err) return reject(err);
-			if (row == null || row.hash !== hash) {
-				return resolve(true);
-			}
+			if (row == null) return resolve(true);
+			if (row.hash !== hash) return resolve(true);
 
 			return resolve(false);
 		});
@@ -125,31 +127,21 @@ async function processFiles(files) {
 
 				const filepath = await copyFile(file);
 
-				if (/\.(jpg|jpeg)$/i.test(filepath)) {
+				if (/\.(jpg|jpeg|png)$/i.test(filepath)) {
+					let format = /\.png$/.test(filepath) ? 'PNG' : 'JPG';
+
 					const resized_files = await processor.resize(filepath);
-					for (let e of resized_files) {
-						await processor.JPG(e);
+					for (let e of (resized_files || [])) {
+						await processor[format](e);
 					}
 
 					await processor.image(filepath);
-					await processor.JPG(filepath);
+					await processor[format](filepath);
 
 					const webp_file = await converter.toWEBP(filepath);
-					await processor.resize(webp_file);
-
-					await processor.lazyLoadBlurried(filepath);
-
-				} else if (/\.png$/i.test(filepath)) {
-					const resized_files = await processor.resize(filepath);
-					for (let e of resized_files) {
-						await processor.PNG(e);
+					if (webp_file) {
+						await processor.resize(webp_file);
 					}
-
-					await processor.image(filepath);
-					await processor.PNG(filepath);
-
-					const webp_file = await converter.toWEBP(filepath);
-					await processor.resize(webp_file);
 
 					await processor.lazyLoadBlurried(filepath);
 
@@ -163,10 +155,12 @@ async function processFiles(files) {
 					await converter.toMP4(filepath);
 					await converter.toWEBM(filepath);
 					await processor.poster(filepath);
+					await processor.videoThumbs(filepath);
 
 				} else if (/\.(mp4)$/i.test(filepath)) {
 					await converter.toWEBM(filepath);
 					await processor.poster(filepath);
+					await processor.videoThumbs(filepath);
 
 				}
 
@@ -175,9 +169,10 @@ async function processFiles(files) {
 
 				await markFileAsProcessed(file);
 				processed_files.push(file);
+
 			} catch (err) {
 				console.groupEnd();
-				console.error(`Error in processing ${file}: ${err}`);
+				console.error(`Error in processing ${file}: ${err.message}`);
 			}
 
 		}
@@ -204,11 +199,17 @@ async function processFiles(files) {
 
 		if (argv.config != null) {
 			console.info(`Extending configuration with file <${argv.config}>`);
-			global.config = Object.assign(
+			global.config = objectAssignDeep(
 				global.config,
-				require(argv.config)
+				require(fs.realpathSync(argv.config))
 			);
 		}
+
+		if (argv.force) {
+			global.config.force = true;
+		}
+
+		console.dir(global.config);
 
 		if (global.config.remoteSync) {
 			console.info('Syncing from remote...');
@@ -229,6 +230,7 @@ async function processFiles(files) {
 			await uploader.syncToRemote(global.config.s3Bucket);
 		}
 
+		console.info('Done');
 		process.exit(0);
 
 	} catch (err) {

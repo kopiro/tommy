@@ -4,12 +4,17 @@ async function execPromise(command, opt = {
 	verbose: false
 }) {
 	return new Promise((resolve, reject) => {
-		// console.debug(command);
+
+		if (global.config.execDebug == true) {
+			console.warn(command.replace(/\t/g, ''));
+		}
+
 		let child = exec(command, {}, (err, stdout, stderr) => {
 			if (err) return reject(stderr);
 			return resolve(stdout);
 		});
-		if (opt.verbose) {
+
+		if (opt.verbose == true || global.config.execDebug == true) {
 			child.stdout.on('data', function (data) {
 				if (data) console.debug(data);
 			});

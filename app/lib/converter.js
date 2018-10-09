@@ -12,6 +12,8 @@ async function overwriteProtection(filepath, dst_path) {
 }
 
 async function convertToWEBP(filepath) {
+	if (global.config.converter.webp == false) return false;
+
 	const dst_path = filepath.replace(/\..+$/g, '.webp');
 	await overwriteProtection(filepath, dst_path);
 
@@ -23,6 +25,8 @@ async function convertToWEBP(filepath) {
 }
 
 async function convertToMP4(filepath) {
+	if (global.config.converter.mp4 == false) return false;
+
 	const dst_path = filepath.replace(/\..+$/g, '.mp4');
 	await overwriteProtection(filepath, dst_path);
 
@@ -36,6 +40,8 @@ async function convertToMP4(filepath) {
 }
 
 async function convertToWEBM(filepath) {
+	if (global.config.converter.webm == false) return false;
+
 	const dst_path = filepath.replace(/\..+$/g, '.webm');
 	await overwriteProtection(filepath, dst_path);
 
