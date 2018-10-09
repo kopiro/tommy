@@ -1,9 +1,6 @@
 FROM node:8-jessie
 
-VOLUME "/src"
-VOLUME "/dst"
 WORKDIR /app
-ENTRYPOINT "/app/entrypoint.sh"
 
 RUN apt-get -y update 
 
@@ -21,4 +18,9 @@ RUN npm i -g svgo
 
 COPY ./app/package.json /app
 RUN npm i
+
 COPY ./app /app
+RUN npm link
+
+ENTRYPOINT ["/usr/local/bin/tommy"]
+CMD ["--src", "/src", "--dst", "/dst"]

@@ -13,34 +13,45 @@ You can optionally configure Tommy to upload all your processed assets to a S3 b
 - `gif` will be optimized with `gifsicle`
 - `svg` will be optimized with `svgo`
 
-- _JPG/PNG files_ will be resized and optimized in multiple images
-- _video files_ will be converted to `mp4, webm` using `ffmpeg` and a poster will be extracted
+- _JPG/PNG files_ will be _resized_ and optimized in multiple images using `imagemagick`
+- _Video files_ will be converted to `mp4, webm` using `ffmpeg`
+- For _Video files_ will be extracted a poster using `ffmpeg`
 
-- _All other static assets_ will be just copied and remain untouched.
+- _All other static assets_ will be just copied and remain untouched
+
+### Configuration
+
+If you pass to Tommy an additiona JSON file, it will be merged with initial config.
+
+```
+tommy --config config.json
+```
 
 ## How to: run with Docker
 
 ```
 docker run \
--v "${ABSPATH_TO_SRC_DIRECTORY}":/src \
--v "${ABSPATH_TO_DEST_DIRECTORY}":/dst \
-kopiro/tommy
+-v "$(pwd)/volumes/src":/src \
+-v "$(pwd)/volumes/dst":/dst \
+kopiro/tommy \
+--src /src \
+--dst /dst
 ```
-
-Please note that:
-
-- `${ABSPATH_TO_SRC_DIRECTORY}` is the path of your original assets.
-- `${ABSPATH_TO_DEST_DIRECTORY}` is the path where you want processed files.
 
 ## How to: run in MacOS
 
-You've to install upfront all converters. With `brew` installed, you could run `./macos.sh`,
-then: `cd app && npm i`.
+Upfront, install dependencies by running `macos.sh`.
 
-To run Tommy:
+Install with NPM:
 
 ```
-SRC_DIR=${ABSPATH_TO_SRC_DIRECTORY} DST_DIR=${ABSPATH_TO_DEST_DIRECTORY} node ./app/index.js
+npm -g i tommy
+```
+
+Then run as a binary:
+
+```
+tommy --src ./volumes/src --dst ./volumes/dst
 ```
 
 ## License

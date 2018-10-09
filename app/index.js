@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 require("console-ultimate/global").replace();
 
 const fs = require("fs");
@@ -7,18 +9,15 @@ const find = require("find");
 const path = require("path");
 const md5 = require("md5-file");
 const sizeOf = require("image-size");
+const argv = require('yargs').argv
+
+const DB_FILEPATH = ".tommy.db";
 
 let config = require("./config.json");
 
-const __src = process.env.SRC_DIR || "/src";
-const __dst = process.env.DST_DIR || "/dst";
-const SQLITE_FILE = "assets.db";
-
-if (__src == null || __dst == null) {
-	throw new Error("__src or __dst null");
-}
-
 let db;
+let __src;
+let __dst;
 
 function getExtension(filename) {
 	return filename
@@ -39,14 +38,16 @@ async function execPromise(command) {
 
 function getFileHash(file) {
 	const filepath = path.join(__src, file);
-	return config.version + "-" + md5.sync(filepath);
+	return config.version + '-' + md5.sync(filepath);
 }
 
 async function createDatabase() {
 	return new Promise(resolve => {
-		db = new sqlite3.Database(path.join(__src, SQLITE_FILE));
+		const dbpath = path.join(__src, DB_FILEPATH);
+		console.info(`Opening database <${dbpath}>`);
+		db = new sqlite3.Database(dbpath);
 		db.run(
-			"CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))",
+			'CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))',
 			() => {
 				resolve();
 			}
@@ -54,19 +55,9 @@ async function createDatabase() {
 	});
 }
 
-async function hasBeenConvertedTo(file, format) {
-	return new Promise((resolve, reject) => {
-		const stmt = db.prepare(`SELECT ${format} FROM conversions WHERE file = ?`);
-		stmt.get([file], (err, row) => {
-			if (err) return reject(err);
-			resolve(row[format]);
-		});
-	});
-}
-
 async function indexFile(file) {
 	return new Promise((resolve, reject) => {
-		const fetch_stmt = db.prepare("SELECT * FROM files WHERE file = ?");
+		const fetch_stmt = db.prepare('SELECT * FROM files WHERE file = ?');
 		const hash = getFileHash(file);
 
 		fetch_stmt.get([file], (err, row) => {
@@ -83,19 +74,10 @@ async function indexFile(file) {
 async function markFileAsProcessed(file) {
 	return new Promise(resolve => {
 		const insert_stmt = db.prepare(
-			"REPLACE INTO files (file, hash) VALUES (?, ?)"
+			'REPLACE INTO files (file, hash) VALUES (?, ?)'
 		);
 		const hash = getFileHash(file);
 		insert_stmt.run([file, hash], resolve);
-	});
-}
-
-async function markFilesAsProcessed(files) {
-	return new Promise(async resolve => {
-		for (let file of files) {
-			await markFileAsProcessed(file);
-		}
-		resolve();
 	});
 }
 
@@ -104,8 +86,16 @@ async function indexFiles() {
 		let files_to_process = [];
 		find.file(__src, async files => {
 			for (let filepath of files) {
-				const file = filepath.replace(__src, "");
-				if (filepath === path.join(__src, SQLITE_FILE)) continue;
+
+				// Ignore our DB directory
+				if (filepath === path.join(__src, DB_FILEPATH)) continue;
+
+				if (config.ignore.indexOf(path.basename(filepath)) >= 0) {
+					console.debug(`Ignoring <${filepath}>`);
+					continue;
+				}
+
+				const file = filepath.replace(__src, '');
 
 				let should_process = await indexFile(file);
 				if (!should_process) continue;
@@ -272,7 +262,7 @@ async function overwriteProtection(filepath, dst_path) {
 }
 
 async function convertToWEBP(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, ".webp");
+	const dst_path = filepath.replace(/\..+$/g, '.webp');
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to WEBP <${filepath}>`);
@@ -283,7 +273,7 @@ async function convertToWEBP(filepath) {
 }
 
 async function convertToMP4(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, ".mp4");
+	const dst_path = filepath.replace(/\..+$/g, '.mp4');
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to MP4 <${filepath}>`);
@@ -296,7 +286,7 @@ async function convertToMP4(filepath) {
 }
 
 async function convertToWEBM(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, ".webm");
+	const dst_path = filepath.replace(/\..+$/g, '.webm');
 	await overwriteProtection(filepath, dst_path);
 
 	console.debug(`Converting to WEBM <${filepath}>`);
@@ -309,7 +299,7 @@ async function convertToWEBM(filepath) {
 }
 
 async function extractPoster(filepath) {
-	const dst_path = filepath.replace(/\..+$/g, "-poster.jpg");
+	const dst_path = filepath.replace(/\..+$/g, '-poster.jpg');
 
 	console.debug(`Extracting poster of <${filepath}> to <${dst_path}>`);
 	await execPromise(`ffmpeg -y \
@@ -336,22 +326,44 @@ async function processSVG(filepath) {
 	return dst_path;
 }
 
+// Init
+
 (async function main() {
-	if (process.argv[2]) {
-		console.info(`Extending configuration with file <${process.argv[1]}>`);
-		config = Object.assign(
-			config,
-			require(path.join(process.cwd(), process.argv[2]))
-		);
+
+	try {
+
+		if (argv.src == null) {
+			throw new Error('Set --src as input source directory');
+		}
+
+		if (argv.dst == null) {
+			throw new Error('Set --dst as output source directory');
+		}
+
+		__src = fs.realpathSync(argv.src);
+		__dst = fs.realpathSync(argv.dst);
+
+		if (argv.config != null) {
+			console.info(`Extending configuration with file <${argv.config}>`);
+			config = Object.assign(
+				config,
+				require(argv.config)
+			);
+		}
+
+		await createDatabase();
+
+		console.info('Indexing files...');
+		let files = await indexFiles();
+
+		console.info('Processing files...');
+		let processed_files = await processFiles(files);
+
+		process.exit(0);
+
+	} catch (err) {
+		console.error(err.message);
+		process.exit(err.code || 1);
 	}
 
-	console.debug(config);
-
-	await createDatabase();
-
-	let files = await indexFiles();
-	await processFiles(files);
-
-	db.close();
-	process.exit(0);
 })();
