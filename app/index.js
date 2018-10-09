@@ -86,8 +86,12 @@ async function indexFiles() {
 				const file = filepath.replace(global.__src, '');
 
 				let should_process = await indexFile(file);
-				if (!should_process) continue;
+				if (!should_process) {
+					console.debug(`Already processed <${filepath}>`);
+					continue;
+				}
 
+				console.debug(`Adding to file list <${filepath}>`);
 				files_to_process.push(file);
 			}
 			resolve(files_to_process);
@@ -102,7 +106,7 @@ async function copyFile(file) {
 	const dst_dir = path.join(__dst, dir);
 	const dst_file = path.join(dst_dir, filename);
 
-	console.debug(`Copying <${filepath}> to <${dst_file}>`);
+	console.debug(`Copying to <${dst_file}>`);
 
 	// Create directory of file
 	await util.execPromise(`/bin/mkdir -p "${dst_dir}"`);
@@ -117,6 +121,7 @@ async function processFiles(files) {
 		for (let file of files) {
 			try {
 				console.info(`Processing <${file}>`);
+				console.group(file);
 
 				const filepath = await copyFile(file);
 
@@ -165,13 +170,16 @@ async function processFiles(files) {
 
 				}
 
+				console.groupEnd();
 				console.info(`Successfully processed <${file}>`);
 
 				await markFileAsProcessed(file);
 				processed_files.push(file);
 			} catch (err) {
+				console.groupEnd();
 				console.error(`Error in processing ${file}: ${err}`);
 			}
+
 		}
 		resolve(processed_files);
 	});

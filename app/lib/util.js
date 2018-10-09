@@ -4,7 +4,7 @@ async function execPromise(command, opt = {
 	verbose: false
 }) {
 	return new Promise((resolve, reject) => {
-		console.debug(command);
+		// console.debug(command);
 		let child = exec(command, {}, (err, stdout, stderr) => {
 			if (err) return reject(stderr);
 			return resolve(stdout);
