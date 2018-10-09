@@ -5,18 +5,6 @@ and, to avoid wasting time, it will also save processed items so that unmodified
 
 Tommy also gives you the option of syncing all your processed assets to a S3 bucket.
 
-File treatment:
-
-- **Image files**:
-  - will be resized in multiple image files and optimized
-  - will be optimized with various specific tools
-  - will be converted to `webp`
-  - a blurried image will be generated for lazy-loading
-- **Video files**:
-  - will be converted and optimized to `mp4` and `webm`
-  - a poster image will be extracted
-- **All other static assets** will be just copied and kept untouched
-
 ## Pass runtime options
 
 - `--src` specify the source directory (where your assets are located)
@@ -37,8 +25,14 @@ Example:
 ```json
 {
   "version": "v1",
-  "resize": [200, 400, 800],
-  "ignore": [".DS_Store", ".gitignore"]
+  "processor": {
+    "resize": true,
+    "poster": false
+  },
+  "resize": {
+    "dimensions": [300, 600, 1200]
+  },
+  "ignore": [".dockerignore"]
 }
 ```
 
