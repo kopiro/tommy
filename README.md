@@ -82,7 +82,7 @@ Example:
 
 | Key                   | Type   | Description            | Default |
 | --------------------- | ------ | ---------------------- | ------- |
-| lazyLoadBlurried.size | number | Length of longest side | 200     |
+| lazyLoadBlurried.size | number | Length of longest side | 10      |
 
 ## How to: run with Docker
 

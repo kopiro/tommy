@@ -31,6 +31,9 @@
 		"quality": "80",
 		"fps": "1/60"
 	},
+	"lazyLoadBlurried": {
+		"size": 10
+	},
 	"ignore": [
 		".DS_Store",
 		".gitignore"
