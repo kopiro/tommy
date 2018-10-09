@@ -110,7 +110,7 @@ async function copyFile(file) {
 
 	// Create directory of file
 	await util.execPromise(`/bin/mkdir -p "${dst_dir}"`);
-	await util.execPromise(`/bin/cp -v "${filepath}" "${dst_file}"`);
+	await util.execPromise(`/bin/cp -f "${filepath}" "${dst_file}"`);
 
 	return dst_file;
 }
