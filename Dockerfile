@@ -16,6 +16,17 @@ RUN sed -i "s/jessie main/jessie main contrib non-free/" /etc/apt/sources.list &
 
 RUN npm i -g svgo
 
+RUN apt-get update && \
+   apt-get install -y \
+   python3 \
+   python3-pip \
+   python3-setuptools \
+   groff \
+   less \
+   && pip3 install --upgrade pip \
+   && apt-get clean && \
+   pip3 install awscli
+
 COPY ./app/package.json /app
 RUN npm i
 
