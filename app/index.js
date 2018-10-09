@@ -112,7 +112,7 @@ async function copyFile(file) {
 
 	// Create directory of file
 	await util.execPromise(`/bin/mkdir -p "${dst_dir}"`);
-	await util.execPromise(`/bin/cp -f "${filepath}" "${dst_file}"`);
+	await util.execPromise(`/bin/cp "${filepath}" "${dst_file}"`);
 
 	return dst_file;
 }
@@ -234,7 +234,7 @@ async function processFiles(files) {
 		process.exit(0);
 
 	} catch (err) {
-		console.error(err.message);
+		console.error(err);
 		process.exit(err.code || 1);
 	}
 
