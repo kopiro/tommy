@@ -19,6 +19,11 @@ More specifically:
 - `gif` will be optimized with `gifsicle`
 - `svg` will be optimized with `svgo`
 
+## Pass runtime options
+
+- `--src` will specify the source directory (where your assets are located)
+- `--dst` will specify the destination directory (where your assets will be generated)
+
 ## Configuration
 
 If you pass to Tommy an additional JSON file, it will be merged with initial config.
@@ -59,43 +64,26 @@ Boolean value indicating that a remote sync should occur (default: `false`)
 
 The name of the S3 bucket to sync from/to.
 
-## Confuring AWS credentials
-
-To use the _remote sync_ feature, you need to configure the binary `aws` to locale credentials.
-
-When using with docker, you can just share your `.awscredentials` file through a volume in the path `/root/.aws/credentials`.
-
-Otherwise, you can configure your `aws` via `aws configure`.
-
-Example file:
-
-````txt
-[default]
-aws_access_key_id=...
-aws_secret_access_key=...
-```
-
-To mount:
-
-```sh
-docker run
-...
--v "$(pwd)/.awscredentials":"/root/.aws/credentials"
-...
-```
-
 ## How to: run with Docker
+
+I suggest you to use with Docker to avoid installing all dependencies in your host.
 
 ```sh
 docker run \
 -v "$(pwd)/volumes/src":/src \
 -v "$(pwd)/volumes/dst":/dst \
--v "$(pwd)/config.json:/config.json" \
+-v "$(pwd)/config.json:/root/config.json" \
 kopiro/tommy \
 --src /src \
 --dst /dst \
---config /config.json
-````
+--config /root/config.json
+```
+
+Explanation of mounts:
+
+- `-v "$(pwd)/volumes/src":/src` mount the source directory (where your assets are located) into container `/src`
+- `-v "$(pwd)/volumes/dst":/dst` mount the destination directory (where your assets will be generated) into container `/dst`
+- `-v "$(pwd)/config.json:/root/config.json"` mount your (optional) configuration JSON file into container `/root/config.json`
 
 ## How to: run in MacOS
 
@@ -109,6 +97,31 @@ Then run as a binary:
 
 ```sh
 tommy --src ./volumes/src --dst ./volumes/dst
+```
+
+## Configure AWS credentials
+
+To use the _remote sync_ feature, you need to configure the binary `aws` to locale credentials.
+
+When using with docker, you can just share your `.awscredentials` file through a volume in the path `/root/.aws/credentials`.
+
+Otherwise, you can configure your `aws` via `aws configure`.
+
+Example file:
+
+```txt
+[default]
+aws_access_key_id=...
+aws_secret_access_key=...
+```
+
+To mount:
+
+```sh
+docker run
+...
+-v "$(pwd)/.awscredentials":"/root/.aws/credentials"
+...
 ```
 
 ## License

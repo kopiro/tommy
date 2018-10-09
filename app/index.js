@@ -32,7 +32,6 @@ function getFileHash(file) {
 async function createDatabase() {
 	return new Promise(resolve => {
 		const dbpath = path.join(global.__dst, global.DB_FILEPATH);
-		console.info(`Opening database <${dbpath}>`);
 		global.db = new sqlite3.Database(dbpath);
 		global.db.run(
 			'CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))',
@@ -198,12 +197,13 @@ async function processFiles(files) {
 			);
 		}
 
-		await createDatabase();
-
 		if (global.config.remoteSync) {
 			console.info('Syncing from remote...');
 			await uploader.syncFromRemote(global.config.s3Bucket);
 		}
+
+		console.info('Opening database...');
+		await createDatabase();
 
 		console.info('Indexing files...');
 		let files = await indexFiles();
