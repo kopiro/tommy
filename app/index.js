@@ -162,6 +162,9 @@ async function processFiles(files) {
 					await processor.poster(filepath);
 					await processor.videoThumbs(filepath);
 
+				} else if (/\.(ogg|wav|aif|ac3|aac)$/i.test(filepath)) {
+					await converter.toMP3(filepath);
+
 				}
 
 				console.groupEnd();

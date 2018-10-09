@@ -17,7 +17,8 @@
 	"converter": {
 		"mp4": true,
 		"webm": true,
-		"webp": true
+		"webp": true,
+		"mp3": true
 	},
 	"resize": {
 		"dimensions": [200, 400, 800, 1200],

@@ -54,6 +54,21 @@ async function convertToWEBM(filepath) {
 	return dst_path;
 }
 
+async function convertToMP3(filepath) {
+	if (global.config.converter.mp3 == false) return false;
+
+	const dst_path = filepath.replace(/\..+$/g, '.mp3');
+	await overwriteProtection(filepath, dst_path);
+
+	console.debug(`Converting to MP3 <${filepath}>`);
+	await util.execPromise(`ffmpeg -y \
+      -i "${filepath}" \
+      "${dst_path}" \
+		-hide_banner`);
+	return dst_path;
+}
+
 exports.toWEBP = convertToWEBP;
 exports.toMP4 = convertToMP4;
 exports.toWEBM = convertToWEBM;
+exports.toMP3 = convertToMP3;

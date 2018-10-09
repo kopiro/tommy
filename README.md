@@ -38,24 +38,25 @@ Example:
 
 ### First-level keys
 
-| Key                        | Type     | Applicable to  | Description                                          | Default           |
-| -------------------------- | -------- | -------------- | ---------------------------------------------------- | ----------------- |
-| version                    | string   | -              | Version of the configuration                         | v1                |
-| ignore                     | string[] | -              | Pattern to ignore                                    | _see config.json_ |
-| remoteSync                 | bool     | -              | On/Off sync to remote bucket                         | false             |
-| s3Bucket                   | bool     | -              | S3 Bucket name                                       | null              |
-| processor.resize           | bool     | jpg/png images | On/Off generation of various resized images          | true              |
-| processor.image            | bool     | jpg/png images | On/Off `imagemagick` processor                       | true              |
-| processor.poster           | bool     | videos         | On/Off generation of poster image                    | true              |
-| processor.jpg              | bool     | jpg images     | On/Off `jpegoptim` optimizer                         | true              |
-| processor.png              | bool     | png images     | On/Off `pngquant` optimizer                          | true              |
-| processor.gif              | bool     | gif images     | On/Off `gifsicle` optimizer                          | true              |
-| processor.svg              | bool     | svg images     | On/Off `svgo` optimizer                              | true              |
-| processor.lazyLoadBlurried | bool     | jpg/png images | On/Off generation of a blurry image                  | true              |
-| processor.videoThumbs      | bool     | videos         | On/Off generation of thumbnails extracted from video | true              |
-| converter.mp4              | bool     | videos         | On/Off conversion to MP4                             | true              |
-| converter.webm             | bool     | videos         | On/Off conversion to WEBM                            | true              |
-| converter.webp             | bool     | jpg/png images | On/Off conversion to WEBP                            | true              |
+| Key                        | Type     | Applicable to | Description                                          | Default           |
+| -------------------------- | -------- | ------------- | ---------------------------------------------------- | ----------------- |
+| version                    | string   | -             | Version of the configuration                         | v1                |
+| ignore                     | string[] | -             | Pattern to ignore                                    | _see config.json_ |
+| remoteSync                 | bool     | -             | On/Off sync to remote bucket                         | false             |
+| s3Bucket                   | bool     | -             | S3 Bucket name                                       | null              |
+| processor.resize           | bool     | images        | On/Off generation of various resized images          | true              |
+| processor.image            | bool     | images        | On/Off `imagemagick` processor                       | true              |
+| processor.poster           | bool     | videos        | On/Off generation of poster image                    | true              |
+| processor.jpg              | bool     | JPGs          | On/Off `jpegoptim` optimizer                         | true              |
+| processor.png              | bool     | PNGs          | On/Off `pngquant` optimizer                          | true              |
+| processor.gif              | bool     | GIFs          | On/Off `gifsicle` optimizer                          | true              |
+| processor.svg              | bool     | SVGs          | On/Off `svgo` optimizer                              | true              |
+| processor.lazyLoadBlurried | bool     | images        | On/Off generation of a blurry image                  | true              |
+| processor.videoThumbs      | bool     | videos        | On/Off generation of thumbnails extracted from video | true              |
+| converter.mp4              | bool     | videos        | On/Off conversion to MP4                             | true              |
+| converter.webm             | bool     | videos        | On/Off conversion to WEBM                            | true              |
+| converter.webp             | bool     | images        | On/Off conversion to WEBP                            | true              |
+| converter.mp3              | bool     | audios        | On/Off conversion to MP3                             | true              |
 
 ### `resize`
 
