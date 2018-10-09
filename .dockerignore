@@ -1,2 +1,4 @@
-node_modules
-.git
+/app/node_modules
+/.git
+/.env 
+/.awscredentials
