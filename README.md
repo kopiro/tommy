@@ -1,23 +1,19 @@
 # Tommy: Web Assets converter and optimizer
 
-Tommy will process and optimize all your static assets ready for the web no matter what is the file extensions.
+Tommy will process and optimize all your static assets ready for the web no matter what is the file extensions;
+and, to avoid time wasting, it will save processed items so that unmodified assets will not be processed further.
 
-It will cache yet processed files so that future executions will be fast.
+You can optionally configure Tommy to sync all your processed assets to a S3 bucket.
 
-You can optionally configure Tommy to upload all your processed assets to a S3 bucket.
+File treatment:
 
-## Handled files
-
-- _Image files_ will be optimized, then resized in multiple images using `imagemagick`
-- _Video files_ will be converted to `mp4, webm` using `ffmpeg` and a poster image will be extracted
-- _All other static assets_ will be just copied and remain untouched
-
-More specifically:
-
-- `jpg, jpeg` will be converted with `imagemagick` and optimized with `jpegoptim`
-- `png` will be converted with `imagemagick` and optimized with `pngquant`
-- `gif` will be optimized with `gifsicle`
-- `svg` will be optimized with `svgo`
+- **Image files** will be:
+  _ resized in multiple images and optimized
+  _ optimized with various specific tools
+- **Video files** will be:
+  _ converted to `mp4, webm`
+  _ a poster image will be extracted
+- **All other static assets** will be just copied and kept untouched
 
 ## Pass runtime options
 
