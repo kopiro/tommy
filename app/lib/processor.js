@@ -32,6 +32,17 @@ async function processGIF(filepath) {
 	return dst_path;
 }
 
+async function processSVG(filepath) {
+	const dst_path = filepath;
+
+	console.debug(`Optimizing SVG <${filepath}>`);
+	await util.execPromise(`svgo \
+	"${filepath}" \
+	-o "${dst_path}"`);
+
+	return dst_path;
+}
+
 async function processPoster(filepath) {
 	const dst_path = filepath.replace(/\..+$/g, '-poster.jpg');
 
@@ -49,13 +60,11 @@ async function processPoster(filepath) {
 	return dst_path;
 }
 
-async function processSVG(filepath) {
-	const dst_path = filepath;
+async function processLazyLoadBlurriedImage(filepath) {
+	const dst_path = filepath.replace(/\..+$/g, '-blurried.jpg');
 
-	console.debug(`Optimizing SVG <${filepath}>`);
-	await util.execPromise(`svgo \
-	"${filepath}" \
-	-o "${dst_path}"`);
+	console.debug(`Extracting poster of <${filepath}> to <${dst_path}>`);
+	await util.execPromise(`convert "${filepath}" -strip -resize "10^" "${dst_path}"`);
 
 	return dst_path;
 }
@@ -92,6 +101,7 @@ async function processResize(filepath) {
 exports.image = processImage;
 exports.poster = processPoster;
 exports.resize = processResize;
+exports.lazyLoadBlurried = processLazyLoadBlurriedImage;
 
 exports.JPG = processJPG;
 exports.PNG = processPNG;

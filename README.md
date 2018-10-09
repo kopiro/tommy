@@ -8,11 +8,13 @@ You can optionally configure Tommy to sync all your processed assets to a S3 buc
 File treatment:
 
 - **Image files** will be:
-  _ resized in multiple images and optimized
-  _ optimized with various specific tools
+  - resized in multiple images and optimized
+  - optimized with various specific tools
+  - converted to `webp`
+  - a blurried image will be generated for lazy-loading
 - **Video files** will be:
-  _ converted to `mp4, webm`
-  _ a poster image will be extracted
+  - converted and optimized to `mp4` and `webm`
+  - a poster image will be extracted
 - **All other static assets** will be just copied and kept untouched
 
 ## Pass runtime options

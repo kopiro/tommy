@@ -8,6 +8,7 @@ const find = require('find');
 const path = require('path');
 const md5 = require('md5-file');
 const argv = require('yargs').argv
+const pack = require('./package.json');
 
 const util = require('./lib/util');
 const processor = require('./lib/processor');
@@ -26,7 +27,7 @@ global.__dst = null;
 
 function getFileHash(file) {
 	const filepath = path.join(global.__src, file);
-	return global.config.version + '-' + md5.sync(filepath);
+	return pack.processingVersion + '-' + global.config.version + '-' + md5.sync(filepath);
 }
 
 async function createDatabase() {
@@ -34,7 +35,7 @@ async function createDatabase() {
 		const dbpath = path.join(global.__dst, global.DB_FILEPATH);
 		global.db = new sqlite3.Database(dbpath);
 		global.db.run(
-			'CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(32))',
+			'CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(64))',
 			() => {
 				resolve();
 			}
@@ -131,6 +132,8 @@ async function processFiles(files) {
 					const webp_file = await converter.toWEBP(filepath);
 					await processor.resize(webp_file);
 
+					await processor.lazyLoadBlurried(filepath);
+
 				} else if (/\.png$/i.test(filepath)) {
 					const resized_files = await processor.resize(filepath);
 					for (let e of resized_files) {
@@ -142,6 +145,8 @@ async function processFiles(files) {
 
 					const webp_file = await converter.toWEBP(filepath);
 					await processor.resize(webp_file);
+
+					await processor.lazyLoadBlurried(filepath);
 
 				} else if (/\.gif$/i.test(filepath)) {
 					await processor.GIF(filepath);

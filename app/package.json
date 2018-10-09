@@ -1,6 +1,7 @@
 {
 	"name": "tommy",
 	"version": "1.0.0",
+	"processingVersion": "1",
 	"description": "Web Assets converter and optimizer",
 	"main": "index.js",
 	"bin": {
