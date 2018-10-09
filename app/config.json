@@ -27,9 +27,7 @@
 		"quality": "80"
 	},
 	"videoThumbs": {
-		"resize": 200,
-		"quality": "80",
-		"fps": "1/60"
+		"fps": "1/30"
 	},
 	"lazyLoadBlurried": {
 		"size": 10

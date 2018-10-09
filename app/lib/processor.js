@@ -1,5 +1,7 @@
 const fs = require('fs');
 const sizeOf = require('image-size');
+const path = require('path');
+const find = require('find');
 
 const util = require('./util');
 const converter = require('./converter');
@@ -80,14 +82,6 @@ async function processVideoThumbs(filepath) {
 		`ffmpeg -y \
 		-i "${filepath}" \
 		-vf fps="${global.config.videoThumbs.fps}" \
-		"${dst_path}"`);
-
-	await util.execPromise(
-		`convert \
-		"${dst_path.replace('%03d', '*')}" \
-		-strip \
-		-resize "${global.config.videoThumbs.resize}x${global.config.videoThumbs.resize}>" \
-		-quality "${global.config.videoThumbs.quality}" \
 		"${dst_path}"`);
 
 	return dst_path;

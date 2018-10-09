@@ -72,11 +72,9 @@ Example:
 
 ### `videoThumbs`
 
-| Key                 | Type   | Description                             | Default |
-| ------------------- | ------ | --------------------------------------- | ------- |
-| videoThumbs.resize  | number | Length of longest side                  | 200     |
-| videoThumbs.quality | string | Quality of images                       | 80      |
-| videoThumbs.fps     | string | Specify FPS of shoots (1/60 = 1 minute) | 1/60    |
+| Key             | Type   | Description                                   | Default |
+| --------------- | ------ | --------------------------------------------- | ------- |
+| videoThumbs.fps | string | Specify FPS of shoots (1/60 = every 1 minute) | 1/30    |
 
 ### `lazyLoadBlurried`
 
