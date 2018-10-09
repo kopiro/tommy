@@ -99,6 +99,12 @@ Then run as a binary:
 tommy --src ./volumes/src --dst ./volumes/dst
 ```
 
+## How: build locally Docker image
+
+Download the repository, then run `./test-docker.sh`.
+
+It will build the Docker image locally and test with volumes present in current repository.
+
 ## Configure AWS credentials
 
 To use the _remote sync_ feature, you need to configure the binary `aws` to locale credentials.
