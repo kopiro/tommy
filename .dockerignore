@@ -1,4 +1,1 @@
-/app/node_modules
-/.git
-/.env 
-/.awscredentials
+node_modules
