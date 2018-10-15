@@ -6,8 +6,10 @@ const find = require('find');
 const util = require('./util');
 const converter = require('./converter');
 
+const Tommy = require('..');
+
 async function processImage(filepath) {
-	if (global.config.processor.image == false) return false;
+	if (Tommy.config.processor.image == false) return false;
 
 	const dst_path = filepath;
 	console.debug(`Stripping image`);
@@ -15,13 +17,13 @@ async function processImage(filepath) {
 		`convert \
 		"${filepath}" \
 		-strip \
-		-quality "${global.config.image.quality}" \
+		-quality "${Tommy.config.image.quality}" \
 		"${dst_path}"`);
 	return dst_path;
 }
 
 async function processJPG(filepath) {
-	if (global.config.processor.jpg == false) return false;
+	if (Tommy.config.processor.jpg == false) return false;
 
 	const dst_path = filepath;
 	console.debug('Optimizing JPEG');
@@ -32,7 +34,7 @@ async function processJPG(filepath) {
 }
 
 async function processPNG(filepath) {
-	if (global.config.processor.png == false) return false;
+	if (Tommy.config.processor.png == false) return false;
 
 	const dst_path = filepath;
 	console.debug('Optimizing PNG');
@@ -45,7 +47,7 @@ async function processPNG(filepath) {
 }
 
 async function processGIF(filepath) {
-	if (global.config.processor.gif == false) return false;
+	if (Tommy.config.processor.gif == false) return false;
 
 	const dst_path = filepath;
 	console.debug('Optimizing GIF');
@@ -60,7 +62,7 @@ async function processGIF(filepath) {
 }
 
 async function processSVG(filepath) {
-	if (global.config.processor.svg == false) return false;
+	if (Tommy.config.processor.svg == false) return false;
 
 	const dst_path = filepath;
 	console.debug('Optimizing SVG');
@@ -72,7 +74,7 @@ async function processSVG(filepath) {
 }
 
 async function processVideoThumbs(filepath) {
-	if (global.config.processor.videoThumbs == false) return false;
+	if (Tommy.config.processor.videoThumbs == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '-thumb-%03d.jpg');
 
@@ -81,14 +83,14 @@ async function processVideoThumbs(filepath) {
 	await util.execPromise(
 		`ffmpeg -y \
 		-i "${filepath}" \
-		-vf fps="${global.config.videoThumbs.fps}" \
+		-vf fps="${Tommy.config.videoThumbs.fps}" \
 		"${dst_path}"`);
 
 	return dst_path;
 }
 
 async function processPoster(filepath) {
-	if (global.config.processor.poster == false) return false;
+	if (Tommy.config.processor.poster == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '-poster.jpg');
 
@@ -108,7 +110,7 @@ async function processPoster(filepath) {
 }
 
 async function processLazyLoadBlurriedImage(filepath) {
-	if (global.config.processor.lazyLoadBlurried == false) return false;
+	if (Tommy.config.processor.lazyLoadBlurried == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '-blurried.jpg');
 
@@ -118,21 +120,21 @@ async function processLazyLoadBlurriedImage(filepath) {
 		`convert \
 		"${filepath}" \
 		-strip \
-		-resize "${global.config.lazyLoadBlurried.size}x${global.config.lazyLoadBlurried.size}^" \
+		-resize "${Tommy.config.lazyLoadBlurried.size}x${Tommy.config.lazyLoadBlurried.size}^" \
 		"${dst_path}"`);
 
 	return dst_path;
 }
 
 async function processResize(filepath) {
-	if (global.config.processor.resize == false) return false;
+	if (Tommy.config.processor.resize == false) return false;
 
 	const resized_images = [];
 
 	const size = sizeOf(filepath);
 	const largest_side = Math.max(size.width, size.height);
 
-	for (let px of global.config.resize.dimensions) {
+	for (let px of Tommy.config.resize.dimensions) {
 		if (px < largest_side) {
 			const dst_path = filepath.replace(/\.(.+)$/g, `-resized-${px}.$1`);
 			console.debug(`Resizing image of ${px}px to <${dst_path}>`);
@@ -142,7 +144,7 @@ async function processResize(filepath) {
 					`convert \
 					"${filepath}" \
 					-strip \
-					-quality "${global.config.resize.quality}" \
+					-quality "${Tommy.config.resize.quality}" \
 					-resize "${px}x${px}>" \
 					"${dst_path}"`
 				);
