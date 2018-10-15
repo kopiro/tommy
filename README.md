@@ -56,10 +56,17 @@ Example:
 | processor.svg              | bool     | SVGs          | On/Off `svgo` optimizer                              | true              |
 | processor.lazyLoadBlurried | bool     | images        | On/Off generation of a blurry image                  | true              |
 | processor.videoThumbs      | bool     | videos        | On/Off generation of thumbnails extracted from video | true              |
+| processor.fontCSS          | bool     | TTFs/OTFs     | On/Off generation of font-face declar via CSS/HTML   | true              |
 | converter.mp4              | bool     | videos        | On/Off conversion to MP4                             | true              |
 | converter.webm             | bool     | videos        | On/Off conversion to WEBM                            | true              |
 | converter.webp             | bool     | images        | On/Off conversion to WEBP                            | true              |
 | converter.mp3              | bool     | audios        | On/Off conversion to MP3                             | true              |
+| converter.ttf              | bool     | TTFs/OTFs     | On/Off conversion to TTF                             | true              |
+| converter.otf              | bool     | TTFs/OTFs     | On/Off conversion to OTF                             | true              |
+| converter.eot              | bool     | TTFs/OTFs     | On/Off conversion to EOT                             | true              |
+| converter.svg              | bool     | TTFs/OTFs     | On/Off conversion to SVG                             | true              |
+| converter.woff             | bool     | TTFs/OTFs     | On/Off conversion to WOFF                            | true              |
+| converter.woff2            | bool     | TTFs/OTFs     | On/Off conversion to WOFF2                           | true              |
 
 ### `resize`
 

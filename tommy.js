@@ -171,6 +171,22 @@ class Tommy {
 					} else if (/\.(ogg|wav|aif|ac3|aac)$/i.test(filepath)) {
 						await converter.toMP3(this, filepath);
 
+					} else if (/\.(ttf)$/i.test(filepath)) {
+						await converter.toOTF(this, filepath);
+						await converter.toSVG(this, filepath);
+						await converter.toEOT(this, filepath);
+						await converter.toWOFF(this, filepath);
+						await converter.toWOFF2(this, filepath);
+						await processor.fontCSS(this, filepath);
+
+					} else if (/\.(otf)$/i.test(filepath)) {
+						await converter.toTTF(this, filepath);
+						await converter.toSVG(this, filepath);
+						await converter.toEOT(this, filepath);
+						await converter.toWOFF(this, filepath);
+						await converter.toWOFF2(this, filepath);
+						await processor.fontCSS(this, filepath);
+
 					}
 
 					console.groupEnd();
@@ -181,7 +197,7 @@ class Tommy {
 
 				} catch (err) {
 					console.groupEnd();
-					console.error(`Error in processing ${file}: ${err.message}`);
+					console.error(`Error in processing ${file}`, err);
 				}
 
 			}

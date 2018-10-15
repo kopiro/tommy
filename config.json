@@ -12,13 +12,20 @@
 		"gif": true,
 		"svg": true,
 		"lazyLoadBlurried": true,
-		"videoThumbs": true
+		"videoThumbs": true,
+		"fontCSS": true
 	},
 	"converter": {
 		"mp4": true,
 		"webm": true,
 		"webp": true,
-		"mp3": true
+		"mp3": true,
+		"ttf": true,
+		"otf": true,
+		"svg": true,
+		"eot": true,
+		"woff": true,
+		"woff2": true
 	},
 	"resize": {
 		"dimensions": [200, 400, 800, 1200],
