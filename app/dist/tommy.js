@@ -1,41 +1,40 @@
 'use strict';
 
-require('console-ultimate/global').replace();
-
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const find = require('find');
 const path = require('path');
 const md5 = require('md5-file');
-const argv = require('yargs').argv;
 const objectAssignDeep = require('object-assign-deep');
-const pack = require('./package.json');
 
-const util = require('./lib/util');
-const processor = require('./lib/processor');
-const converter = require('./lib/converter');
-const uploader = require('./lib/uploader');
+const pkgDir = require('pkg-dir').sync();
+
+const util = require(pkgDir + '/lib/util');
+const processor = require(pkgDir + '/lib/processor');
+const converter = require(pkgDir + '/lib/converter');
+const uploader = require(pkgDir + '/lib/uploader');
 
 // Global vars
 
-global.DB_FILEPATH = '.tommy.db';
+exports.DB_FILENAME = '.tommy.db';
+exports.VERSION = 'v1';
 
-global.config = require('./config.json');
+exports.config = require(pkgDir + '/config.json');
 
-global.db = null;
-global.__src = null;
-global.__dst = null;
+exports.db = null;
+exports.__src = null;
+exports.__dst = null;
 
 function getFileHash(file) {
-	const filepath = path.join(global.__src, file);
-	return pack.processingVersion + '-' + global.config.version + '-' + md5.sync(filepath);
+	const filepath = path.join(exports.__src, file);
+	return exports.VERSION + '-' + exports.config.version + '-' + md5.sync(filepath);
 }
 
 async function createDatabase() {
 	return new Promise(resolve => {
-		const dbpath = path.join(global.__dst, global.DB_FILEPATH);
-		global.db = new sqlite3.Database(dbpath);
-		global.db.run(
+		const dbpath = path.join(exports.__dst, exports.DB_FILENAME);
+		exports.db = new sqlite3.Database(dbpath);
+		exports.db.run(
 			'CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(64))',
 			() => {
 				resolve();
@@ -46,9 +45,9 @@ async function createDatabase() {
 
 async function indexFile(file) {
 	return new Promise((resolve, reject) => {
-		if (global.config.force) return resolve(true);
+		if (exports.config.force) return resolve(true);
 
-		const fetch_stmt = global.db.prepare('SELECT * FROM files WHERE file = ?');
+		const fetch_stmt = exports.db.prepare('SELECT * FROM files WHERE file = ?');
 		const hash = getFileHash(file);
 
 		fetch_stmt.get([file], (err, row) => {
@@ -63,7 +62,7 @@ async function indexFile(file) {
 
 async function markFileAsProcessed(file) {
 	return new Promise(resolve => {
-		const insert_stmt = global.db.prepare(
+		const insert_stmt = exports.db.prepare(
 			'REPLACE INTO files (file, hash) VALUES (?, ?)'
 		);
 		const hash = getFileHash(file);
@@ -74,18 +73,18 @@ async function markFileAsProcessed(file) {
 async function indexFiles() {
 	return new Promise(resolve => {
 		let files_to_process = [];
-		find.file(global.__src, async files => {
+		find.file(exports.__src, async files => {
 			for (let filepath of files) {
 
 				// Ignore our DB directory
-				if (filepath === path.join(global.__src, global.DB_FILEPATH)) continue;
+				if (filepath === path.join(exports.__src, exports.DB_FILENAME)) continue;
 
-				if (global.config.ignore.indexOf(path.basename(filepath)) >= 0) {
+				if (exports.config.ignore.indexOf(path.basename(filepath)) >= 0) {
 					console.debug(`Ignoring <${filepath}>`);
 					continue;
 				}
 
-				const file = filepath.replace(global.__src, '');
+				const file = filepath.replace(exports.__src, '');
 
 				let should_process = await indexFile(file);
 				if (!should_process) {
@@ -185,38 +184,37 @@ async function processFiles(files) {
 
 // Init
 
-(async function main() {
+exports.run = async function main(src, dst, config, force) {
 
 	try {
 
-		if (argv.src == null) {
+		if (src == null) {
 			throw new Error('Set --src as input source directory');
 		}
+		exports.__src = fs.realpathSync(src);
 
-		if (argv.dst == null) {
+		if (dst == null) {
 			throw new Error('Set --dst as output source directory');
 		}
+		exports.__dst = fs.realpathSync(dst);
 
-		global.__src = fs.realpathSync(argv.src);
-		global.__dst = fs.realpathSync(argv.dst);
-
-		if (argv.config != null) {
-			console.info(`Extending configuration with file <${argv.config}>`);
-			global.config = objectAssignDeep(
-				global.config,
-				require(fs.realpathSync(argv.config))
+		if (config != null) {
+			console.info(`Extending configuration with file <${config}>`);
+			exports.config = objectAssignDeep(
+				exports.config,
+				require(fs.realpathSync(config))
 			);
 		}
 
-		if (argv.force) {
-			global.config.force = true;
+		if (force) {
+			exports.config.force = true;
 		}
 
-		console.dir(global.config);
+		console.dir(exports.config);
 
-		if (global.config.remoteSync) {
+		if (exports.config.remoteSync) {
 			console.info('Syncing from remote...');
-			await uploader.syncFromRemote(global.config.s3Bucket);
+			await uploader.syncFromRemote(exports.config.s3Bucket);
 		}
 
 		console.info('Opening database...');
@@ -228,9 +226,9 @@ async function processFiles(files) {
 		console.info('Processing files...');
 		let processed_files = await processFiles(files);
 
-		if (global.config.remoteSync) {
+		if (exports.config.remoteSync) {
 			console.info('Syncing to remote...');
-			await uploader.syncToRemote(global.config.s3Bucket);
+			await uploader.syncToRemote(exports.config.s3Bucket);
 		}
 
 		console.info('Done');
@@ -241,4 +239,4 @@ async function processFiles(files) {
 		process.exit(err.code || 1);
 	}
 
-})();
+};

@@ -1,11 +1,12 @@
 const exec = require('child_process').exec;
+const Tommy = require('..');
 
 async function execPromise(command, opt = {
 	verbose: false
 }) {
 	return new Promise((resolve, reject) => {
 
-		if (global.config.execDebug == true) {
+		if (Tommy.config.execDebug == true) {
 			console.warn(command.replace(/\t/g, ''));
 		}
 
@@ -14,7 +15,7 @@ async function execPromise(command, opt = {
 			return resolve(stdout);
 		});
 
-		if (opt.verbose == true || global.config.execDebug == true) {
+		if (opt.verbose == true || Tommy.config.execDebug == true) {
 			child.stdout.on('data', function (data) {
 				if (data) console.debug(data);
 			});

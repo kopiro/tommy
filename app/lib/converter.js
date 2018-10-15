@@ -1,8 +1,9 @@
 const fs = require('fs');
 const util = require('./util');
+const Tommy = require('..');
 
 async function overwriteProtection(filepath, dst_path) {
-	const src_path = dst_path.replace(global.__dst, global.__src);
+	const src_path = dst_path.replace(Tommy.__dst, Tommy.__src);
 	if (fs.existsSync(src_path)) {
 		throw new Error(
 			`Unable to convert <${filepath}> because original <${src_path}> will be overwritten`
@@ -12,7 +13,7 @@ async function overwriteProtection(filepath, dst_path) {
 }
 
 async function convertToWEBP(filepath) {
-	if (global.config.converter.webp == false) return false;
+	if (Tommy.config.converter.webp == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '.webp');
 	await overwriteProtection(filepath, dst_path);
@@ -25,7 +26,7 @@ async function convertToWEBP(filepath) {
 }
 
 async function convertToMP4(filepath) {
-	if (global.config.converter.mp4 == false) return false;
+	if (Tommy.config.converter.mp4 == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '.mp4');
 	await overwriteProtection(filepath, dst_path);
@@ -40,7 +41,7 @@ async function convertToMP4(filepath) {
 }
 
 async function convertToWEBM(filepath) {
-	if (global.config.converter.webm == false) return false;
+	if (Tommy.config.converter.webm == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '.webm');
 	await overwriteProtection(filepath, dst_path);
@@ -55,7 +56,7 @@ async function convertToWEBM(filepath) {
 }
 
 async function convertToMP3(filepath) {
-	if (global.config.converter.mp3 == false) return false;
+	if (Tommy.config.converter.mp3 == false) return false;
 
 	const dst_path = filepath.replace(/\..+$/g, '.mp3');
 	await overwriteProtection(filepath, dst_path);
