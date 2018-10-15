@@ -13,11 +13,15 @@ if (argv.webserver) {
 
 	app.post('/', async (req, res) => {
 		try {
-			const files = await Tommy.run(req.body.src, req.body.dst, req.body.config, req.body.force);
+
+			let tommy = new Tommy(req.body.src, req.body.dst, req.body.config, req.body.force);
+			const files = await tommy.run();
+
 			res.json({
 				status: 'OK',
 				files: files
 			});
+
 		} catch (err) {
 			res.status(400).send(err.message ? {
 				status: 'ERR',
@@ -44,14 +48,15 @@ if (argv.webserver) {
 		try {
 			let config = null;
 			if (argv.config) {
-				config = require(fs.realpathSync(argv.config));
+				config = require(require('fs').realpathSync(argv.config));
 			}
 
-			await Tommy.run(argv.src, argv.dst, config, argv.force);
+			let tommy = new Tommy(argv.src, argv.dst, config, argv.force);
+			await tommy.run();
 			process.exit(0);
 
 		} catch (err) {
-			console.error(err);
+			console.error(err.message || 'Unexpected error');
 			process.exit(1);
 		}
 
