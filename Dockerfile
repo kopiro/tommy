@@ -34,4 +34,3 @@ COPY . /app
 RUN npm link
 
 ENTRYPOINT ["/usr/local/bin/tommy"]
-CMD ["--src", "/src", "--dst", "/dst"]
