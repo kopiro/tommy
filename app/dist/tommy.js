@@ -1,3 +1,5 @@
+'use strict';
+
 require('console-ultimate/global').replace();
 
 const fs = require('fs');
@@ -183,34 +185,30 @@ async function processFiles(files) {
 
 // Init
 
-if (require.main === module) {
-	main(argv.src, argv.dst, argv.config, argv.force)
-}
-
-async function main(src, dst, config, force) {
+(async function main() {
 
 	try {
 
-		if (src == null) {
+		if (argv.src == null) {
 			throw new Error('Set --src as input source directory');
 		}
 
-		if (dst == null) {
+		if (argv.dst == null) {
 			throw new Error('Set --dst as output source directory');
 		}
 
-		global.__src = fs.realpathSync(src);
-		global.__dst = fs.realpathSync(dst);
+		global.__src = fs.realpathSync(argv.src);
+		global.__dst = fs.realpathSync(argv.dst);
 
-		if (config != null) {
-			console.info(`Extending configuration with file <${config}>`);
+		if (argv.config != null) {
+			console.info(`Extending configuration with file <${argv.config}>`);
 			global.config = objectAssignDeep(
 				global.config,
-				require(fs.realpathSync(config))
+				require(fs.realpathSync(argv.config))
 			);
 		}
 
-		if (force) {
+		if (argv.force) {
 			global.config.force = true;
 		}
 
@@ -243,6 +241,4 @@ async function main(src, dst, config, force) {
 		process.exit(err.code || 1);
 	}
 
-}
-
-module.exports = main;
+})();
