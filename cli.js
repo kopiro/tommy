@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-require('console-ultimate/global').replace();
-
 const argv = require('yargs').argv;
 
 const Tommy = require('.');
@@ -40,13 +38,23 @@ if (argv.webserver) {
 } else {
 
 	(async () => {
+
+		require('console-ultimate/global').replace();
+
 		try {
-			await Tommy.run(argv.src, argv.dst, argv.config, argv.force);
+			let config = null;
+			if (argv.config) {
+				config = require(fs.realpathSync(argv.config));
+			}
+
+			await Tommy.run(argv.src, argv.dst, config, argv.force);
 			process.exit(0);
+
 		} catch (err) {
 			console.error(err);
 			process.exit(1);
 		}
+
 	})();
 
 }

@@ -192,10 +192,10 @@ exports.run = async function main(src, dst, config, force) {
 	exports.__dst = fs.realpathSync(dst);
 
 	if (config != null) {
-		console.info(`Extending configuration with file <${config}>`);
+		console.info('Extending configuration');
 		exports.config = objectAssignDeep(
 			exports.config,
-			require(fs.realpathSync(config))
+			config
 		);
 	}
 

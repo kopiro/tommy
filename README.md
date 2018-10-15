@@ -12,6 +12,9 @@ Tommy also gives you the option of syncing all your processed assets to a S3 buc
 - `--force` regenerate all assets ignoring cache
 - `--config` specify a JSON file containing an extension to the configuration
 
+- `--webserver` will spawn an HTTP webserver that access via `POST /` a request to run
+- `--port` is the webserver port (default: 80)
+
 ## Configuration
 
 If you pass to Tommy an additional JSON file, it will be merged with initial config.
