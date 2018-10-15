@@ -181,55 +181,51 @@ async function processFiles(files) {
 // Init
 
 exports.run = async function main(src, dst, config, force) {
+	if (src == null) {
+		throw new Error('Set --src as input source directory');
+	}
+	exports.__src = fs.realpathSync(src);
 
-	try {
+	if (dst == null) {
+		throw new Error('Set --dst as output source directory');
+	}
+	exports.__dst = fs.realpathSync(dst);
 
-		if (src == null) {
-			throw new Error('Set --src as input source directory');
-		}
-		exports.__src = fs.realpathSync(src);
-
-		if (dst == null) {
-			throw new Error('Set --dst as output source directory');
-		}
-		exports.__dst = fs.realpathSync(dst);
-
-		if (config != null) {
-			console.info(`Extending configuration with file <${config}>`);
-			exports.config = objectAssignDeep(
-				exports.config,
-				require(fs.realpathSync(config))
-			);
-		}
-
-		if (force) {
-			exports.config.force = true;
-		}
-
-		console.dir(exports.config);
-
-		if (exports.config.remoteSync) {
-			console.info('Syncing from remote...');
-			await uploader.syncFromRemote(exports.config.s3Bucket);
-		}
-
-		console.info('Opening database...');
-		await createDatabase();
-
-		console.info('Indexing files...');
-		let files = await indexFiles();
-
-		console.info('Processing files...');
-		let processed_files = await processFiles(files);
-
-		if (exports.config.remoteSync) {
-			console.info('Syncing to remote...');
-			await uploader.syncToRemote(exports.config.s3Bucket);
-		}
-
-		console.info('Done');
-	} catch (err) {
-		console.error(err);
+	if (config != null) {
+		console.info(`Extending configuration with file <${config}>`);
+		exports.config = objectAssignDeep(
+			exports.config,
+			require(fs.realpathSync(config))
+		);
 	}
 
+	if (force == true) {
+		exports.config.force = true;
+	}
+
+	console.dir(exports.config);
+
+	if (exports.config.remoteSync == true) {
+		console.info('Syncing from remote...');
+		await uploader.syncFromRemote(exports.config.s3Bucket);
+	}
+
+	console.info('Opening database...');
+	await createDatabase();
+
+	console.info('Indexing files...');
+	let files = await indexFiles();
+
+	console.info('Processing files...');
+	let processed_files = await processFiles(files);
+
+	if (exports.config.remoteSync == true) {
+		console.info('Syncing to remote...');
+		await uploader.syncToRemote(exports.config.s3Bucket);
+	}
+
+	console.info('Done');
+	exports.db.close();
+
+	return processed_files;
 };

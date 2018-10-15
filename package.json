@@ -20,6 +20,7 @@
 	"homepage": "https://github.com/kopiro/tommy#readme",
 	"dependencies": {
 		"console-ultimate": "^2.9.0",
+		"express": "^4.16.4",
 		"find": "^0.2.9",
 		"image-size": "^0.6.3",
 		"md5-file": "^4.0.0",
