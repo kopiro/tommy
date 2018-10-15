@@ -228,11 +228,8 @@ exports.run = async function main(src, dst, config, force) {
 		}
 
 		console.info('Done');
-		process.exit(0);
-
 	} catch (err) {
 		console.error(err);
-		process.exit(err.code || 1);
 	}
 
 };
