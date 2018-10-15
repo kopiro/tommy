@@ -5,19 +5,17 @@ const path = require('path');
 const md5 = require('md5-file');
 const objectAssignDeep = require('object-assign-deep');
 
-const pkgDir = require('pkg-dir').sync();
-
-const util = require(pkgDir + '/lib/util');
-const processor = require(pkgDir + '/lib/processor');
-const converter = require(pkgDir + '/lib/converter');
-const uploader = require(pkgDir + '/lib/uploader');
+const util = require('./lib/util');
+const processor = require('./lib/processor');
+const converter = require('./lib/converter');
+const uploader = require('./lib/uploader');
 
 // Global vars
 
 exports.DB_FILENAME = '.tommy.db';
 exports.VERSION = 'v1';
 
-exports.config = require(pkgDir + '/config.json');
+exports.config = require('./config.json');
 
 exports.db = null;
 exports.__src = null;
