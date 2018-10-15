@@ -100,9 +100,9 @@ async function indexFiles() {
 
 async function copyFile(file) {
 	const dir = path.dirname(file);
-	const filepath = path.join(__src, file);
+	const filepath = path.join(exports.__src, file);
 	const filename = path.basename(file);
-	const dst_dir = path.join(__dst, dir);
+	const dst_dir = path.join(exports.__dst, dir);
 	const dst_file = path.join(dst_dir, filename);
 
 	console.debug(`Copying to <${dst_file}>`);
