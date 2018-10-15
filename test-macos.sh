@@ -1,5 +1,5 @@
 #!/bin/bash
 tommy \
---src ./volumes/src \
---dst ./volumes/dst \
+--src ./test/src \
+--dst ./test/dst \
 --config ./config.json

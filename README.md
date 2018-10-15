@@ -89,8 +89,8 @@ I suggest you to use with Docker to avoid installing all dependencies in your ho
 
 ```sh
 docker run \
--v "$(pwd)/volumes/src":/src \
--v "$(pwd)/volumes/dst":/dst \
+-v "$(pwd)/test/src":/src \
+-v "$(pwd)/test/dst":/dst \
 -v "$(pwd)/config.json:/root/config.json" \
 kopiro/tommy \
 --src /src \
@@ -100,8 +100,8 @@ kopiro/tommy \
 
 Explanation of mounts:
 
-- `-v "$(pwd)/volumes/src":/src` mount the source directory (where your assets are located) into container `/src`
-- `-v "$(pwd)/volumes/dst":/dst` mount the destination directory (where your assets will be generated) into container `/dst`
+- `-v "$(pwd)/test/src":/src` mount the source directory (where your assets are located) into container `/src`
+- `-v "$(pwd)/test/dst":/dst` mount the destination directory (where your assets will be generated) into container `/dst`
 - `-v "$(pwd)/config.json:/root/config.json"` mount your (optional) configuration JSON file into container `/root/config.json`
 
 ## How to: run in MacOS
@@ -115,14 +115,14 @@ npm -g i tommy
 Then run as a binary:
 
 ```sh
-tommy --src ./volumes/src --dst ./volumes/dst
+tommy --src ./test/src --dst ./test/dst
 ```
 
 ## How: build locally Docker image
 
 Download the repository, then run `./test-docker.sh`.
 
-It will build the Docker image locally and test with volumes present in current repository.
+It will build the Docker image locally and test with test present in current repository.
 
 ## Configure AWS credentials
 
