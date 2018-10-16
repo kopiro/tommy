@@ -92,7 +92,7 @@ class Tommy {
 			for (let filepath of find.fileSync(this.src)) {
 
 				// Ignore our DB directory
-				if (filepath === path.join(this.src, DB_FILENAME)) continue;
+				if (filepath === path.join(this.dst, DB_FILENAME)) continue;
 
 				if (this.config.ignore.indexOf(path.basename(filepath)) >= 0) {
 					console.debug(`Ignoring <${filepath}>`);
