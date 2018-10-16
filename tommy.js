@@ -90,10 +90,6 @@ class Tommy {
 		return new Promise(async resolve => {
 			let files_to_process = [];
 			for (let filepath of find.fileSync(this.src)) {
-
-				// Ignore our DB directory
-				if (filepath === path.join(this.dst, DB_FILENAME)) continue;
-
 				if (this.config.ignore.indexOf(path.basename(filepath)) >= 0) {
 					console.debug(`Ignoring <${filepath}>`);
 					continue;
