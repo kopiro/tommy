@@ -132,7 +132,7 @@ Explanation of mounts:
 Upfront, install dependencies by running `macos.sh`, then install with NPM:
 
 ```sh
-npm -g i tommy
+npm -g i kopiro-tommy
 ```
 
 Then run as a binary:
