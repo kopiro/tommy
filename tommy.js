@@ -35,18 +35,30 @@ class Tommy {
 	}
 
 	async createDatabase() {
-		return new Promise(resolve => {
+		return new Promise((resolve, reject) => {
 			if (this.db != null) return resolve();
 
 			const dbpath = path.join(this.dst, DB_FILENAME);
 			this.db = new sqlite3.Database(dbpath);
 
-			this.db.run(
-				'CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(64))',
-				() => {
+			this.db.run('CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(64))', (err) => {
+				if (err) return reject(err);
+				this.db.run('CREATE TABLE IF NOT EXISTS outputs (file VARCHAR(255), hash VARCHAR(64), ts NUMBER, output VARCHAR(255), PRIMARY KEY (file, output))', (err) => {
+					if (err) return reject();
 					resolve();
-				}
-			);
+				});
+			});
+		});
+	}
+
+	async getOutputs() {
+		return new Promise((resolve, reject) => {
+			const fetch_stmt = this.db.prepare('SELECT * FROM outputs');
+
+			fetch_stmt.all([], (err, rows) => {
+				if (err) return reject(err);
+				return resolve(rows);
+			});
 		});
 	}
 
@@ -68,13 +80,8 @@ class Tommy {
 	}
 
 	async markFileAsProcessed(file) {
-		return new Promise(resolve => {
-			const insert_stmt = this.db.prepare(
-				'REPLACE INTO files (file, hash) VALUES (?, ?)'
-			);
-			const hash = this.getFileHash(file);
-			insert_stmt.run([file, hash], resolve);
-		});
+		const insert_stmt = this.db.prepare('REPLACE INTO files (file, hash) VALUES (?, ?)');
+		return this.runStatement(insert_stmt, [file, this.getFileHash(file)]);
 	}
 
 	async indexFiles() {
@@ -102,6 +109,7 @@ class Tommy {
 					console.debug(`Adding to file list <${filepath}>`);
 					files_to_process.push(file);
 				}
+
 				resolve(files_to_process);
 			});
 		});
@@ -117,10 +125,72 @@ class Tommy {
 		console.debug(`Copying to <${dst_file}>`);
 
 		// Create directory of file
-		await util.execPromise(`/bin/mkdir -p "${dst_dir}"`);
-		await util.execPromise(`/bin/cp "${filepath}" "${dst_file}"`);
+		await util.execPromise(`mkdir -p "${dst_dir}"`);
+		await util.execPromise(`cp "${filepath}" "${dst_file}"`);
 
 		return dst_file;
+	}
+
+	async runStatement(stmt, data) {
+		return new Promise((resolve, reject) => {
+			stmt.run(data, (err, result) => {
+				if (err) return reject(err);
+				return resolve(result);
+			});
+		});
+	}
+
+	async appendToOutput(file, output) {
+		if (output == false || output == null) return;
+		if (typeof output === 'string') output = [output];
+
+		return new Promise(async resolve => {
+			const stmt = this.db.prepare('REPLACE INTO outputs (file, hash, ts, output) VALUES (?, ?, ?, ?)');
+			for (let e of output) {
+				try {
+					await this.runStatement(stmt, [file, this.getFileHash(file), Date.now(), e.replace(this.dst, '')]);
+				} catch (err) {
+					console.error(err);
+				}
+			}
+			resolve();
+		});
+	}
+
+	async deleteDstFile(e) {
+		console.log(`Deleting file <${e}>`);
+		const full_path = path.join(this.dst, e);
+
+		if (fs.existsSync(full_path)) {
+			fs.unlinkSync(full_path);
+		}
+
+		await this.runStatement(this.db.prepare('DELETE FROM outputs WHERE output = ?'), [e]);
+
+		return true;
+	}
+
+	async cleanDst(files) {
+		const outputs = await this.getOutputs();
+
+		// Remove from outputs all files that are yet present in files
+		for (let file of files) {
+			let i = outputs.length;
+			while (i--) {
+				if (outputs[i].file === file) {
+					outputs.splice(i, 1);
+				}
+			}
+		}
+
+		// So remaining files are to delete :)
+		for (let e of outputs) {
+			try {
+				await this.deleteDstFile(e.output);
+			} catch (err) {
+				console.error(`Error while removing file <${e.output}>`, err);
+			}
+		}
 	}
 
 	async processFiles(files) {
@@ -133,73 +203,75 @@ class Tommy {
 					console.group(file);
 
 					const filepath = await this.copyFile(file);
+					const extension = util.getExtension(file);
+					await this.appendToOutput(file, filepath);
 
 					if (/\.(jpg|jpeg|png)$/i.test(filepath)) {
-						let format = /\.png$/.test(filepath) ? 'PNG' : 'JPG';
+						const format = /\.png$/.test(filepath) ? 'png' : 'jpg';
 
-						const resized_files = await processor.resize(this, filepath);
-						for (let e of (resized_files || [])) {
-							await processor[format.toUpperCase()](this, e);
-						}
+						const images_resized = await processor.resize(this, filepath);
+						await this.appendToOutput(file, images_resized);
 
-						await processor.image(this, filepath);
-						await processor[format.toUpperCase()](this, filepath);
+						const image_processed = await processor.image(this, filepath);
+						await this.appendToOutput(file, image_processed);
 
-						const webp_file = await converter.toWEBP(this, filepath);
-						if (webp_file) {
-							await processor.resize(this, webp_file);
-						}
+						const image_optimized = await processor[format.toUpperCase()](this, filepath);
+						await this.appendToOutput(file, image_optimized);
 
-						await processor.lazyLoadBlurried(this, filepath);
+						const image_webp = await converter.toWEBP(this, filepath);
+						await this.appendToOutput(file, image_webp);
 
-						await tester.image(this, filepath, format.toLowerCase());
+						const images_webp_resized = await processor.resize(this, image_webp);
+						await this.appendToOutput(file, images_webp_resized);
+
+						const lazy_load_blurred_image = await processor.lazyLoadBlurried(this, filepath);
+						await this.appendToOutput(file, lazy_load_blurred_image);
+
+						const test_image = await tester.image(this, filepath, format.toLowerCase());
+						await this.appendToOutput(file, test_image);
 
 					} else if (/\.gif$/i.test(filepath)) {
-						await processor.GIF(this, filepath);
+						const image_optimized = await processor.GIF(this, filepath);
+						await this.appendToOutput(file, image_optimized);
 
 					} else if (/\.svg$/i.test(filepath)) {
-						await processor.SVG(this, filepath);
+						const image_optimized = await processor.SVG(this, filepath);
+						await this.appendToOutput(file, image_optimized);
 
-					} else if (/\.(mov|avi|m4v|3gp|m2v|ogg)$/i.test(filepath)) {
-						await converter.toMP4(this, filepath);
-						await converter.toWEBM(this, filepath);
-						await processor.poster(this, filepath);
-						await processor.videoThumbs(this, filepath);
+					} else if (/\.(mov|avi|m4v|3gp|m2v|ogg|mp4)$/i.test(filepath)) {
+						for (let format of ['mp4', 'webm']) {
+							if (extension.toLowerCase() != format) {
+								const video_converted = await converter['to' + format.toUpperCase()](this, filepath);
+								await this.appendToOutput(file, video_converted);
+							}
+						}
 
-						await tester.video(this, filepath);
+						const video_poster = await processor.poster(this, filepath);
+						await this.appendToOutput(file, video_poster);
 
-					} else if (/\.(mp4)$/i.test(filepath)) {
-						await converter.toWEBM(this, filepath);
-						await processor.poster(this, filepath);
-						await processor.videoThumbs(this, filepath);
+						const video_thumbs = await processor.videoThumbs(this, filepath);
+						await this.appendToOutput(file, video_thumbs);
 
-						await tester.video(this, filepath);
+						const test_video = await tester.video(this, filepath);
+						await this.appendToOutput(file, test_video);
 
 					} else if (/\.(ogg|wav|aif|ac3|aac)$/i.test(filepath)) {
-						await converter.toMP3(this, filepath);
+						const audio_mp3 = await converter.toMP3(this, filepath);
+						await this.appendToOutput(file, audio_mp3);
 
-						await tester.audio(this, filepath);
+					} else if (/\.(ttf|otf)$/i.test(filepath)) {
+						for (let format of ['TTF', 'OTF', 'SVG', 'EOT', 'WOFF', 'WOFF2']) {
+							if (extension.toLowerCase() != format) {
+								const font_converted = await converter['to' + format.toUpperCase()](this, filepath);
+								await this.appendToOutput(file, font_converted);
+							}
+						}
 
-					} else if (/\.(ttf)$/i.test(filepath)) {
-						await converter.toOTF(this, filepath);
-						await converter.toSVG(this, filepath);
-						await converter.toEOT(this, filepath);
-						await converter.toWOFF(this, filepath);
-						await converter.toWOFF2(this, filepath);
-						await tester.font(this, filepath);
-
-					} else if (/\.(otf)$/i.test(filepath)) {
-						await converter.toTTF(this, filepath);
-						await converter.toSVG(this, filepath);
-						await converter.toEOT(this, filepath);
-						await converter.toWOFF(this, filepath);
-						await converter.toWOFF2(this, filepath);
-						await tester.font(this, filepath);
-
+						const test_font = await tester.font(this, filepath);
+						await this.appendToOutput(file, test_font);
 					}
 
 					console.groupEnd();
-					console.info(`Successfully processed <${file}>`);
 
 					await this.markFileAsProcessed(file);
 					processed_files.push(file);
@@ -238,6 +310,9 @@ class Tommy {
 
 		console.info('Indexing files...');
 		let files = await this.indexFiles();
+
+		console.info('Cleaning deleted files...');
+		await this.cleanDst(files);
 
 		console.info('Processing files...');
 		let processed_files = await this.processFiles(files);
