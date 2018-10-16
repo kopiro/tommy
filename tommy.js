@@ -26,7 +26,6 @@ class Tommy {
 			config || {}
 		);
 		this.force = force;
-		this.db = null;
 	}
 
 	getFileHash(file) {
@@ -36,14 +35,17 @@ class Tommy {
 
 	async createDatabase() {
 		return new Promise((resolve, reject) => {
-			if (this.db != null) return resolve();
+			if (Tommy.db) return resolve();
 
-			const dbpath = path.join(this.dst, DB_FILENAME);
-			this.db = new sqlite3.Database(dbpath);
+			try {
+				Tommy.db = new sqlite3.Database(path.join(this.dst, DB_FILENAME));
+			} catch (err) {
+				return reject(err);
+			}
 
-			this.db.run('CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(64))', (err) => {
+			Tommy.db.run('CREATE TABLE IF NOT EXISTS files (file VARCHAR(255) PRIMARY KEY, hash VARCHAR(64))', (err) => {
 				if (err) return reject(err);
-				this.db.run('CREATE TABLE IF NOT EXISTS outputs (file VARCHAR(255), hash VARCHAR(64), ts NUMBER, output VARCHAR(255), PRIMARY KEY (file, output))', (err) => {
+				Tommy.db.run('CREATE TABLE IF NOT EXISTS outputs (file VARCHAR(255), hash VARCHAR(64), ts NUMBER, output VARCHAR(255), PRIMARY KEY (file, output))', (err) => {
 					if (err) return reject();
 					resolve();
 				});
@@ -53,7 +55,7 @@ class Tommy {
 
 	async getOutputs() {
 		return new Promise((resolve, reject) => {
-			const fetch_stmt = this.db.prepare('SELECT * FROM outputs');
+			const fetch_stmt = Tommy.db.prepare('SELECT * FROM outputs');
 
 			fetch_stmt.all([], (err, rows) => {
 				if (err) return reject(err);
@@ -66,7 +68,7 @@ class Tommy {
 		return new Promise((resolve, reject) => {
 			if (this.force) return resolve(true);
 
-			const fetch_stmt = this.db.prepare('SELECT * FROM files WHERE file = ?');
+			const fetch_stmt = Tommy.db.prepare('SELECT * FROM files WHERE file = ?');
 			const hash = this.getFileHash(file);
 
 			fetch_stmt.get([file], (err, row) => {
@@ -80,38 +82,36 @@ class Tommy {
 	}
 
 	async markFileAsProcessed(file) {
-		const insert_stmt = this.db.prepare('REPLACE INTO files (file, hash) VALUES (?, ?)');
+		const insert_stmt = Tommy.db.prepare('REPLACE INTO files (file, hash) VALUES (?, ?)');
 		return this.runStatement(insert_stmt, [file, this.getFileHash(file)]);
 	}
 
 	async indexFiles() {
-		return new Promise(resolve => {
+		return new Promise(async resolve => {
 			let files_to_process = [];
-			find.file(this.src, async files => {
-				for (let filepath of files) {
+			for (let filepath of find.fileSync(this.src)) {
 
-					// Ignore our DB directory
-					if (filepath === path.join(this.src, DB_FILENAME)) continue;
+				// Ignore our DB directory
+				if (filepath === path.join(this.src, DB_FILENAME)) continue;
 
-					if (this.config.ignore.indexOf(path.basename(filepath)) >= 0) {
-						console.debug(`Ignoring <${filepath}>`);
-						continue;
-					}
-
-					const file = filepath.replace(this.src, '');
-
-					let should_process = await this.indexFile(file);
-					if (!should_process) {
-						console.debug(`Already processed <${filepath}>`);
-						continue;
-					}
-
-					console.debug(`Adding to file list <${filepath}>`);
-					files_to_process.push(file);
+				if (this.config.ignore.indexOf(path.basename(filepath)) >= 0) {
+					console.debug(`Ignoring <${filepath}>`);
+					continue;
 				}
 
-				resolve(files_to_process);
-			});
+				const file = filepath.replace(this.src, '');
+
+				let should_process = await this.indexFile(file);
+				if (!should_process) {
+					console.debug(`Already processed <${filepath}>`);
+					continue;
+				}
+
+				console.debug(`Adding to file list <${filepath}>`);
+				files_to_process.push(file);
+			}
+
+			resolve(files_to_process);
 		});
 	}
 
@@ -145,7 +145,7 @@ class Tommy {
 		if (typeof output === 'string') output = [output];
 
 		return new Promise(async resolve => {
-			const stmt = this.db.prepare('REPLACE INTO outputs (file, hash, ts, output) VALUES (?, ?, ?, ?)');
+			const stmt = Tommy.db.prepare('REPLACE INTO outputs (file, hash, ts, output) VALUES (?, ?, ?, ?)');
 			for (let e of output) {
 				try {
 					await this.runStatement(stmt, [file, this.getFileHash(file), Date.now(), e.replace(this.dst, '')]);
@@ -165,12 +165,13 @@ class Tommy {
 			fs.unlinkSync(full_path);
 		}
 
-		await this.runStatement(this.db.prepare('DELETE FROM outputs WHERE output = ?'), [e]);
+		await this.runStatement(Tommy.db.prepare('DELETE FROM outputs WHERE output = ?'), [e]);
 
 		return true;
 	}
 
-	async cleanDst(files) {
+	async cleanDst() {
+		const files = find.fileSync(this.src).map(filepath => filepath.replace(this.src, ''));
 		const outputs = await this.getOutputs();
 
 		// Remove from outputs all files that are yet present in files
@@ -312,11 +313,11 @@ class Tommy {
 		console.info('Opening database...');
 		await this.createDatabase();
 
+		console.info('Cleaning deleted files...');
+		await this.cleanDst();
+
 		console.info('Indexing files...');
 		let files = await this.indexFiles();
-
-		console.info('Cleaning deleted files...');
-		await this.cleanDst(files);
 
 		console.info('Processing files...');
 		let processed_files = await this.processFiles(files);
@@ -325,8 +326,6 @@ class Tommy {
 			console.info('Syncing to remote...');
 			await uploader.syncToRemote(this.config.s3Bucket);
 		}
-
-		this.db.close();
 
 		console.info('Done');
 		return processed_files;
