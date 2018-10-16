@@ -300,6 +300,10 @@ class Tommy {
 		}
 		this.dst = fs.realpathSync(this.dst);
 
+		if (this.src === this.dst) {
+			throw new Error('Codardly refusing to run when SRC directory is equal to DST');
+		}
+
 		if (this.config.remoteSync == true) {
 			console.info('Syncing from remote...');
 			await uploader.syncFromRemote(this.config.s3Bucket);
