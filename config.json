@@ -12,8 +12,7 @@
 		"gif": true,
 		"svg": true,
 		"lazyLoadBlurried": true,
-		"videoThumbs": true,
-		"fontCSS": true
+		"videoThumbs": true
 	},
 	"converter": {
 		"mp4": true,
@@ -33,16 +32,24 @@
 		"video": true
 	},
 	"resize": {
+		"suffix": "-resized-${i}.${ext}",
 		"dimensions": [200, 400, 800, 1200],
-		"quality": "80"
+		"quality": 80
 	},
 	"image": {
-		"quality": "80"
+		"quality": 80
 	},
 	"videoThumbs": {
-		"fps": "1/30"
+		"suffix": "-thumb-${i}.jpg",
+		"size": 400,
+		"quality": 80,
+		"count": 5
+	},
+	"poster": {
+		"suffix": "-poster.jpg"
 	},
 	"lazyLoadBlurried": {
+		"suffix": "-blurried.jpg",
 		"size": 10
 	},
 	"ignore": [

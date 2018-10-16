@@ -60,6 +60,7 @@ Example:
 | processor.videoThumbs      | bool     | videos        | On/Off generation of thumbnails extracted from video | true              |
 | converter.mp4              | bool     | videos        | On/Off conversion to MP4                             | true              |
 | converter.webm             | bool     | videos        | On/Off conversion to WEBM                            | true              |
+| tester.video               | bool     | videos        | On/Off generation of sample HTML page to test        | true              |
 | converter.mp3              | bool     | audios        | On/Off conversion to MP3                             | true              |
 | converter.ttf              | bool     | TTFs/OTFs     | On/Off conversion to TTF                             | true              |
 | converter.otf              | bool     | TTFs/OTFs     | On/Off conversion to OTF                             | true              |
@@ -71,10 +72,11 @@ Example:
 
 ### `resize`
 
-| Key               | Type     | Description                                       | Default            |
-| ----------------- | -------- | ------------------------------------------------- | ------------------ |
-| resize.dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200] |
-| resize.quality    | number   | Quality of images                                 | 80                 |
+| Key               | Type     | Description                                       | Default                |
+| ----------------- | -------- | ------------------------------------------------- | ---------------------- |
+| resize.dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200]     |
+| resize.quality    | number   | Quality of images                                 | 80                     |
+| resize.suffix     | string   | Suffix to apply to new files                      | "-resized-${i}.${ext}" |
 
 ### `image`
 
@@ -84,15 +86,25 @@ Example:
 
 ### `videoThumbs`
 
-| Key             | Type   | Description                                   | Default |
-| --------------- | ------ | --------------------------------------------- | ------- |
-| videoThumbs.fps | string | Specify FPS of shoots (1/60 = every 1 minute) | 1/30    |
+| Key                 | Type   | Description                  | Default           |
+| ------------------- | ------ | ---------------------------- | ----------------- |
+| videoThumbs.count   | number | How many thumbnails extract  | 5                 |
+| videoThumbs.size    | number | Length of longest side       | 400               |
+| videoThumbs.quality | number | Quality of image             | 80                |
+| videoThumbs.suffix  | string | Suffix to apply to new files | "-thumb-${i}.jpg" |
 
 ### `lazyLoadBlurried`
 
-| Key                   | Type   | Description            | Default |
-| --------------------- | ------ | ---------------------- | ------- |
-| lazyLoadBlurried.size | number | Length of longest side | 10      |
+| Key                     | Type   | Description                  | Default         |
+| ----------------------- | ------ | ---------------------------- | --------------- |
+| lazyLoadBlurried.size   | number | Length of longest side       | 10              |
+| lazyLoadBlurried.suffix | string | Suffix to apply to new files | "-blurried.jpg" |
+
+### `poster`
+
+| Key           | Type   | Description                  | Default       |
+| ------------- | ------ | ---------------------------- | ------------- |
+| poster.suffix | string | Suffix to apply to new files | "-poster.jpg" |
 
 ## How to: run with Docker
 

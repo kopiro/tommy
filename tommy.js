@@ -1,5 +1,5 @@
 const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3');
 const find = require('find');
 const path = require('path');
 const md5 = require('md5-file');
