@@ -115,7 +115,7 @@ docker run \
 -v "$(pwd)/test/src":/src \
 -v "$(pwd)/test/dst":/dst \
 -v "$(pwd)/config.json:/root/config.json" \
-kopiro/tommy \
+kopiro/tommy:latest \
 --src /src \
 --dst /dst \
 --config /root/config.json
