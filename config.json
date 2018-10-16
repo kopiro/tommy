@@ -27,6 +27,11 @@
 		"woff": true,
 		"woff2": true
 	},
+	"tester": {
+		"font": true,
+		"image": true,
+		"video": true
+	},
 	"resize": {
 		"dimensions": [200, 400, 800, 1200],
 		"quality": "80"

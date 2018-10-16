@@ -9,6 +9,7 @@ const util = require('./lib/util');
 const processor = require('./lib/processor');
 const converter = require('./lib/converter');
 const uploader = require('./lib/uploader');
+const tester = require('./lib/tester');
 
 // Global vars
 
@@ -138,11 +139,11 @@ class Tommy {
 
 						const resized_files = await processor.resize(this, filepath);
 						for (let e of (resized_files || [])) {
-							await processor[format](this, e);
+							await processor[format.toUpperCase()](this, e);
 						}
 
 						await processor.image(this, filepath);
-						await processor[format](this, filepath);
+						await processor[format.toUpperCase()](this, filepath);
 
 						const webp_file = await converter.toWEBP(this, filepath);
 						if (webp_file) {
@@ -150,6 +151,8 @@ class Tommy {
 						}
 
 						await processor.lazyLoadBlurried(this, filepath);
+
+						await tester.image(this, filepath, format.toLowerCase());
 
 					} else if (/\.gif$/i.test(filepath)) {
 						await processor.GIF(this, filepath);
@@ -163,13 +166,19 @@ class Tommy {
 						await processor.poster(this, filepath);
 						await processor.videoThumbs(this, filepath);
 
+						await tester.video(this, filepath);
+
 					} else if (/\.(mp4)$/i.test(filepath)) {
 						await converter.toWEBM(this, filepath);
 						await processor.poster(this, filepath);
 						await processor.videoThumbs(this, filepath);
 
+						await tester.video(this, filepath);
+
 					} else if (/\.(ogg|wav|aif|ac3|aac)$/i.test(filepath)) {
 						await converter.toMP3(this, filepath);
+
+						await tester.audio(this, filepath);
 
 					} else if (/\.(ttf)$/i.test(filepath)) {
 						await converter.toOTF(this, filepath);
@@ -177,7 +186,7 @@ class Tommy {
 						await converter.toEOT(this, filepath);
 						await converter.toWOFF(this, filepath);
 						await converter.toWOFF2(this, filepath);
-						await processor.fontCSS(this, filepath);
+						await tester.font(this, filepath);
 
 					} else if (/\.(otf)$/i.test(filepath)) {
 						await converter.toTTF(this, filepath);
@@ -185,7 +194,7 @@ class Tommy {
 						await converter.toEOT(this, filepath);
 						await converter.toWOFF(this, filepath);
 						await converter.toWOFF2(this, filepath);
-						await processor.fontCSS(this, filepath);
+						await tester.font(this, filepath);
 
 					}
 
