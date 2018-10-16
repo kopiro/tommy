@@ -8,4 +8,4 @@ DEBUG=1 \
 --src .test/src \
 --dst .test/dst \
 --config .config.ext.json \
---force
+$1

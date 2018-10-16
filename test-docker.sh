@@ -16,4 +16,4 @@ kopiro/tommy \
 --src "/src" \
 --dst "/dst" \
 --config "/root/config.ext.json" \
---force
+$1
