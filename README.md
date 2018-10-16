@@ -49,17 +49,18 @@ Example:
 | s3Bucket                   | bool     | -             | S3 Bucket name                                       | null              |
 | processor.resize           | bool     | images        | On/Off generation of various resized images          | true              |
 | processor.image            | bool     | images        | On/Off `imagemagick` processor                       | true              |
-| processor.poster           | bool     | videos        | On/Off generation of poster image                    | true              |
+| processor.lazyLoadBlurried | bool     | images        | On/Off generation of a blurry image                  | true              |
+| converter.webp             | bool     | images        | On/Off conversion to WEBP                            | true              |
+| tester.image               | bool     | images        | On/Off generation of sample HTML page to test        | true              |
 | processor.jpg              | bool     | JPGs          | On/Off `jpegoptim` optimizer                         | true              |
 | processor.png              | bool     | PNGs          | On/Off `pngquant` optimizer                          | true              |
 | processor.gif              | bool     | GIFs          | On/Off `gifsicle` optimizer                          | true              |
 | processor.svg              | bool     | SVGs          | On/Off `svgo` optimizer                              | true              |
-| processor.lazyLoadBlurried | bool     | images        | On/Off generation of a blurry image                  | true              |
+| processor.poster           | bool     | videos        | On/Off generation of poster image                    | true              |
 | processor.videoThumbs      | bool     | videos        | On/Off generation of thumbnails extracted from video | true              |
-| processor.fontCSS          | bool     | TTFs/OTFs     | On/Off generation of font-face declar via CSS/HTML   | true              |
 | converter.mp4              | bool     | videos        | On/Off conversion to MP4                             | true              |
 | converter.webm             | bool     | videos        | On/Off conversion to WEBM                            | true              |
-| converter.webp             | bool     | images        | On/Off conversion to WEBP                            | true              |
+| tester.video               | bool     | videos        | On/Off generation of sample HTML page to test        | true              |
 | converter.mp3              | bool     | audios        | On/Off conversion to MP3                             | true              |
 | converter.ttf              | bool     | TTFs/OTFs     | On/Off conversion to TTF                             | true              |
 | converter.otf              | bool     | TTFs/OTFs     | On/Off conversion to OTF                             | true              |
@@ -67,13 +68,15 @@ Example:
 | converter.svg              | bool     | TTFs/OTFs     | On/Off conversion to SVG                             | true              |
 | converter.woff             | bool     | TTFs/OTFs     | On/Off conversion to WOFF                            | true              |
 | converter.woff2            | bool     | TTFs/OTFs     | On/Off conversion to WOFF2                           | true              |
+| tester.font                | bool     | TTFs/OTFs     | On/Off generation of sample HTML page to test        | true              |
 
 ### `resize`
 
-| Key               | Type     | Description                                       | Default            |
-| ----------------- | -------- | ------------------------------------------------- | ------------------ |
-| resize.dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200] |
-| resize.quality    | number   | Quality of images                                 | 80                 |
+| Key               | Type     | Description                                       | Default                |
+| ----------------- | -------- | ------------------------------------------------- | ---------------------- |
+| resize.dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200]     |
+| resize.quality    | number   | Quality of images                                 | 80                     |
+| resize.suffix     | string   | Suffix to apply to new files                      | "-resized-${i}.${ext}" |
 
 ### `image`
 
@@ -83,15 +86,25 @@ Example:
 
 ### `videoThumbs`
 
-| Key             | Type   | Description                                   | Default |
-| --------------- | ------ | --------------------------------------------- | ------- |
-| videoThumbs.fps | string | Specify FPS of shoots (1/60 = every 1 minute) | 1/30    |
+| Key                 | Type   | Description                  | Default           |
+| ------------------- | ------ | ---------------------------- | ----------------- |
+| videoThumbs.count   | number | How many thumbnails extract  | 5                 |
+| videoThumbs.size    | number | Length of longest side       | 400               |
+| videoThumbs.quality | number | Quality of image             | 80                |
+| videoThumbs.suffix  | string | Suffix to apply to new files | "-thumb-${i}.jpg" |
 
 ### `lazyLoadBlurried`
 
-| Key                   | Type   | Description            | Default |
-| --------------------- | ------ | ---------------------- | ------- |
-| lazyLoadBlurried.size | number | Length of longest side | 10      |
+| Key                     | Type   | Description                  | Default         |
+| ----------------------- | ------ | ---------------------------- | --------------- |
+| lazyLoadBlurried.size   | number | Length of longest side       | 10              |
+| lazyLoadBlurried.suffix | string | Suffix to apply to new files | "-blurried.jpg" |
+
+### `poster`
+
+| Key           | Type   | Description                  | Default       |
+| ------------- | ------ | ---------------------------- | ------------- |
+| poster.suffix | string | Suffix to apply to new files | "-poster.jpg" |
 
 ## How to: run with Docker
 
