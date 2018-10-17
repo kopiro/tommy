@@ -79,13 +79,13 @@ By settings `enabled: false` in a key, you'll disable that service
 | resize.quality    | number   | Quality of images                                 | 80                     |
 | resize.suffix     | string   | Suffix to apply to new files                      | "-resized-${i}.${ext}" |
 
-### `image`
+### `processor.image`
 
 | Key           | Type   | Description      | Default |
 | ------------- | ------ | ---------------- | ------- |
 | image.quality | number | Quality of image | 80      |
 
-### `videoThumbs`
+### `processor.videoThumbs`
 
 | Key                 | Type   | Description                  | Default           |
 | ------------------- | ------ | ---------------------------- | ----------------- |
@@ -94,14 +94,14 @@ By settings `enabled: false` in a key, you'll disable that service
 | videoThumbs.quality | number | Quality of image             | 80                |
 | videoThumbs.suffix  | string | Suffix to apply to new files | "-thumb-${i}.jpg" |
 
-### `lazyLoadBlurried`
+### `processor.lazyLoadBlurried`
 
 | Key                     | Type   | Description                  | Default         |
 | ----------------------- | ------ | ---------------------------- | --------------- |
 | lazyLoadBlurried.size   | number | Length of longest side       | 10              |
 | lazyLoadBlurried.suffix | string | Suffix to apply to new files | "-blurried.jpg" |
 
-### `poster`
+### `processor.poster`
 
 | Key           | Type   | Description                  | Default       |
 | ------------- | ------ | ---------------------------- | ------------- |
