@@ -56,7 +56,7 @@ if (argv.webserver) {
 			process.exit(0);
 
 		} catch (err) {
-			console.error(err.message || 'Unexpected error');
+			console.error(err || 'Unexpected error');
 			process.exit(1);
 		}
 

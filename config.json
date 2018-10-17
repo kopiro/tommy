@@ -1,54 +1,80 @@
 {
-	"version": "v1",
 	"remoteSync": false,
 	"s3Bucket": null,
-	"execDebug": false,
-	"processor": {
-		"resize": true,
-		"image": true,
-		"poster": true,
-		"jpg": true,
-		"png": true,
-		"gif": true,
-		"svg": true,
-		"lazyLoadBlurried": true,
-		"videoThumbs": true
+	"processor.jpg": {
+		"enabled": true
 	},
-	"converter": {
-		"mp4": true,
-		"webm": true,
-		"webp": true,
-		"mp3": true,
-		"ttf": true,
-		"otf": true,
-		"svg": true,
-		"eot": true,
-		"woff": true,
-		"woff2": true
+	"processor.png": {
+		"enabled": true
 	},
-	"tester": {
-		"font": true,
-		"image": true,
-		"video": true
+	"processor.gif": {
+		"enabled": true
 	},
-	"resize": {
+	"processor.svg": {
+		"enabled": true
+	},
+	"converter.mp4": {
+		"enabled": true
+	},
+	"converter.webm": {
+		"enabled": true
+	},
+	"converter.webp": {
+		"enabled": true
+	},
+	"converter.mp3": {
+		"enabled": true
+	},
+	"converter.ttf": {
+		"enabled": true
+	},
+	"converter.otf": {
+		"enabled": true
+	},
+	"converter.svg": {
+		"enabled": true
+	},
+	"converter.eot": {
+		"enabled": true
+	},
+	"converter.woff": {
+		"enabled": true
+	},
+	"converter.woff2": {
+		"enabled": true
+	},
+	"tester.image": {
+		"enabled": true
+	},
+	"tester.video": {
+		"enabled": true
+	},
+	"tester.font": {
+		"enabled": true
+	},
+	"processor.resize": {
+		"enabled": true,
 		"suffix": "-resized-${i}.${ext}",
 		"dimensions": [200, 400, 800, 1200],
 		"quality": 80
 	},
-	"image": {
+	"processor.image": {
+		"enabled": true,
 		"quality": 80
 	},
-	"videoThumbs": {
+	"processor.videoThumbs": {
+		"enabled": true,
 		"suffix": "-thumb-${i}.jpg",
 		"size": 400,
 		"quality": 80,
 		"count": 5
 	},
-	"poster": {
+	"processor.poster": {
+		"enabled": true,
 		"suffix": "-poster.jpg"
 	},
-	"lazyLoadBlurried": {
+	"processor.lazyLoadBlurried": {
+		"enabled": true,
 		"suffix": "-blurried.jpg",
 		"size": 10
 	},

@@ -27,13 +27,8 @@ Example:
 
 ```json
 {
-  "version": "v1",
-  "processor": {
-    "resize": true,
-    "poster": false
-  },
-  "resize": {
-    "dimensions": [300, 600, 1200]
+  "processor.resize": {
+    "enabled": false
   },
   "ignore": [".dockerignore"]
 }
@@ -41,36 +36,42 @@ Example:
 
 ### First-level keys
 
-| Key                        | Type     | Applicable to | Description                                          | Default           |
-| -------------------------- | -------- | ------------- | ---------------------------------------------------- | ----------------- |
-| version                    | string   | -             | Version of the configuration                         | v1                |
-| ignore                     | string[] | -             | Pattern to ignore                                    | _see config.json_ |
-| remoteSync                 | bool     | -             | On/Off sync to remote bucket                         | false             |
-| s3Bucket                   | bool     | -             | S3 Bucket name                                       | null              |
-| processor.resize           | bool     | images        | On/Off generation of various resized images          | true              |
-| processor.image            | bool     | images        | On/Off `imagemagick` processor                       | true              |
-| processor.lazyLoadBlurried | bool     | images        | On/Off generation of a blurry image                  | true              |
-| converter.webp             | bool     | images        | On/Off conversion to WEBP                            | true              |
-| tester.image               | bool     | images        | On/Off generation of sample HTML page to test        | true              |
-| processor.jpg              | bool     | JPGs          | On/Off `jpegoptim` optimizer                         | true              |
-| processor.png              | bool     | PNGs          | On/Off `pngquant` optimizer                          | true              |
-| processor.gif              | bool     | GIFs          | On/Off `gifsicle` optimizer                          | true              |
-| processor.svg              | bool     | SVGs          | On/Off `svgo` optimizer                              | true              |
-| processor.poster           | bool     | videos        | On/Off generation of poster image                    | true              |
-| processor.videoThumbs      | bool     | videos        | On/Off generation of thumbnails extracted from video | true              |
-| converter.mp4              | bool     | videos        | On/Off conversion to MP4                             | true              |
-| converter.webm             | bool     | videos        | On/Off conversion to WEBM                            | true              |
-| tester.video               | bool     | videos        | On/Off generation of sample HTML page to test        | true              |
-| converter.mp3              | bool     | audios        | On/Off conversion to MP3                             | true              |
-| converter.ttf              | bool     | TTFs/OTFs     | On/Off conversion to TTF                             | true              |
-| converter.otf              | bool     | TTFs/OTFs     | On/Off conversion to OTF                             | true              |
-| converter.eot              | bool     | TTFs/OTFs     | On/Off conversion to EOT                             | true              |
-| converter.svg              | bool     | TTFs/OTFs     | On/Off conversion to SVG                             | true              |
-| converter.woff             | bool     | TTFs/OTFs     | On/Off conversion to WOFF                            | true              |
-| converter.woff2            | bool     | TTFs/OTFs     | On/Off conversion to WOFF2                           | true              |
-| tester.font                | bool     | TTFs/OTFs     | On/Off generation of sample HTML page to test        | true              |
+| Key        | Type     | Applicable to | Description                  | Default           |
+| ---------- | -------- | ------------- | ---------------------------- | ----------------- |
+| ignore     | string[] | -             | Pattern to ignore            | _see config.json_ |
+| remoteSync | bool     | -             | On/Off sync to remote bucket | false             |
+| s3Bucket   | bool     | -             | S3 Bucket name               | null              |
 
-### `resize`
+## Enabling/Disabling services
+
+By settings `enabled: false` in a key, you'll disable that service
+
+| Key                                | Type | Applicable to | Description                     | Default |
+| ---------------------------------- | ---- | ------------- | ------------------------------- | ------- |
+| processor.resize.enabled           | bool | images        | various resized images          | true    |
+| processor.image.enabled            | bool | images        | `imagemagick` processor         | true    |
+| processor.lazyLoadBlurried.enabled | bool | images        | a blurry image                  | true    |
+| converter.webp.enabled             | bool | images        | conversion to WEBP              | true    |
+| tester.image.enabled               | bool | images        | sample HTML page to test        | true    |
+| processor.jpg.enabled              | bool | JPGs          | `jpegoptim` optimizer           | true    |
+| processor.png.enabled              | bool | PNGs          | `pngquant` optimizer            | true    |
+| processor.gif.enabled              | bool | GIFs          | `gifsicle` optimizer            | true    |
+| processor.svg.enabled              | bool | SVGs          | `svgo` optimizer                | true    |
+| processor.poster.enabled           | bool | videos        | poster image                    | true    |
+| processor.videoThumbs.enabled      | bool | videos        | thumbnails extracted from video | true    |
+| converter.mp4.enabled              | bool | videos        | conversion to MP4               | true    |
+| converter.webm.enabled             | bool | videos        | conversion to WEBM              | true    |
+| tester.video.enabled               | bool | videos        | sample HTML page to test        | true    |
+| converter.mp3.enabled              | bool | audios        | conversion to MP3               | true    |
+| converter.ttf.enabled              | bool | TTFs/OTFs     | conversion to TTF               | true    |
+| converter.otf.enabled              | bool | TTFs/OTFs     | conversion to OTF               | true    |
+| converter.eot.enabled              | bool | TTFs/OTFs     | conversion to EOT               | true    |
+| converter.svg.enabled              | bool | TTFs/OTFs     | conversion to SVG               | true    |
+| converter.woff.enabled             | bool | TTFs/OTFs     | conversion to WOFF              | true    |
+| converter.woff2.enabled            | bool | TTFs/OTFs     | conversion to WOFF2             | true    |
+| tester.font.enabled                | bool | TTFs/OTFs     | sample HTML page to test        | true    |
+
+### `processor.resize`
 
 | Key               | Type     | Description                                       | Default                |
 | ----------------- | -------- | ------------------------------------------------- | ---------------------- |
