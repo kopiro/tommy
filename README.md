@@ -1,5 +1,7 @@
 # Tommy: Web Assets converter and optimizer
 
+<img src="render.gif" />
+
 Tommy will process and optimize all your static assets ready for the web, no matter what the file extension happens to be;
 and, to avoid wasting time, it will also save processed items so that unmodified assets will not be processed further.
 
@@ -14,6 +16,8 @@ Tommy also gives you the option of syncing all your processed assets to a S3 buc
 
 - `--webserver` will spawn an HTTP webserver that access via `POST /` a request to run
 - `--port` is the webserver port (default: 80)
+
+### WARNING: Set `--dst` option to an empty directory. This directory should only be used by Tommy and could potentially delete all files in that directory if started with a weird configuration / corrupted database
 
 ## Configuration
 
@@ -30,46 +34,62 @@ Example:
   "processor.resize": {
     "enabled": false
   },
+  "processor.resize": {
+    "enabled": true,
+    "suffix": "-resized-${i}.${ext}",
+    "dimensions": [100, 300],
+    "quality": 60
+  },
   "ignore": [".dockerignore"]
 }
 ```
 
 ### First-level keys
 
-| Key        | Type     | Applicable to | Description                  | Default           |
-| ---------- | -------- | ------------- | ---------------------------- | ----------------- |
-| ignore     | string[] | -             | Pattern to ignore            | _see config.json_ |
-| remoteSync | bool     | -             | On/Off sync to remote bucket | false             |
-| s3Bucket   | bool     | -             | S3 Bucket name               | null              |
+| Key        | Type     | Description                  | Default           |
+| ---------- | -------- | ---------------------------- | ----------------- |
+| ignore     | string[] | Pattern to ignore            | _see config.json_ |
+| remoteSync | bool     | On/Off sync to remote bucket | false             |
+| s3Bucket   | bool     | S3 Bucket name               | null              |
 
 ## Enabling/Disabling services
 
-By settings `enabled: false` in a key, you'll disable that service
+By settings `enabled: false` in a key, you'll disable that service.
 
-| Key                                | Type | Applicable to | Description                     | Default |
-| ---------------------------------- | ---- | ------------- | ------------------------------- | ------- |
-| processor.resize.enabled           | bool | images        | various resized images          | true    |
-| processor.image.enabled            | bool | images        | `imagemagick` processor         | true    |
-| processor.lazyLoadBlurried.enabled | bool | images        | a blurry image                  | true    |
-| converter.webp.enabled             | bool | images        | conversion to WEBP              | true    |
-| tester.image.enabled               | bool | images        | sample HTML page to test        | true    |
-| processor.jpg.enabled              | bool | JPGs          | `jpegoptim` optimizer           | true    |
-| processor.png.enabled              | bool | PNGs          | `pngquant` optimizer            | true    |
-| processor.gif.enabled              | bool | GIFs          | `gifsicle` optimizer            | true    |
-| processor.svg.enabled              | bool | SVGs          | `svgo` optimizer                | true    |
-| processor.poster.enabled           | bool | videos        | poster image                    | true    |
-| processor.videoThumbs.enabled      | bool | videos        | thumbnails extracted from video | true    |
-| converter.mp4.enabled              | bool | videos        | conversion to MP4               | true    |
-| converter.webm.enabled             | bool | videos        | conversion to WEBM              | true    |
-| tester.video.enabled               | bool | videos        | sample HTML page to test        | true    |
-| converter.mp3.enabled              | bool | audios        | conversion to MP3               | true    |
-| converter.ttf.enabled              | bool | TTFs/OTFs     | conversion to TTF               | true    |
-| converter.otf.enabled              | bool | TTFs/OTFs     | conversion to OTF               | true    |
-| converter.eot.enabled              | bool | TTFs/OTFs     | conversion to EOT               | true    |
-| converter.svg.enabled              | bool | TTFs/OTFs     | conversion to SVG               | true    |
-| converter.woff.enabled             | bool | TTFs/OTFs     | conversion to WOFF              | true    |
-| converter.woff2.enabled            | bool | TTFs/OTFs     | conversion to WOFF2             | true    |
-| tester.font.enabled                | bool | TTFs/OTFs     | sample HTML page to test        | true    |
+Example:
+
+```json
+...
+"processor.resize": {
+   "enabled": false
+}
+...
+```
+
+| Key                        | Applicable to | Description                     | Default |
+| -------------------------- | ------------- | ------------------------------- | ------- |
+| processor.resize           | images        | various resized images          | true    |
+| processor.image            | images        | `imagemagick` processor         | true    |
+| processor.lazyLoadBlurried | images        | a blurry image                  | true    |
+| converter.webp             | images        | conversion to WEBP              | true    |
+| tester.image               | images        | sample HTML page to test        | true    |
+| processor.jpg              | JPGs          | `jpegoptim` optimizer           | true    |
+| processor.png              | PNGs          | `pngquant` optimizer            | true    |
+| processor.gif              | GIFs          | `gifsicle` optimizer            | true    |
+| processor.svg              | SVGs          | `svgo` optimizer                | true    |
+| processor.poster           | videos        | poster image                    | true    |
+| processor.videoThumbs      | videos        | thumbnails extracted from video | true    |
+| converter.mp4              | videos        | conversion to MP4               | true    |
+| converter.webm             | videos        | conversion to WEBM              | true    |
+| tester.video               | videos        | sample HTML page to test        | true    |
+| converter.mp3              | audios        | conversion to MP3               | true    |
+| converter.ttf              | fonts         | conversion to TTF               | true    |
+| converter.otf              | fonts         | conversion to OTF               | true    |
+| converter.eot              | fonts         | conversion to EOT               | true    |
+| converter.svg              | fonts         | conversion to SVG               | true    |
+| converter.woff             | fonts         | conversion to WOFF              | true    |
+| converter.woff2            | fonts         | conversion to WOFF2             | true    |
+| tester.font                | fonts         | sample HTML page to test        | true    |
 
 ### `processor.resize`
 
