@@ -301,7 +301,7 @@ class Tommy {
 
 			const stmt = Tommy.db.prepare(`SELECT * FROM ${TABLE_NAME} WHERE input_file = ? AND runnable_key = ? LIMIT 1`);
 			stmt.get([input_file, runnable_key], async (err, row) => {
-				if (err) return reject(err);
+				if (err) return resolve(null);
 
 				if (runnable_config.enabled == false) {
 					console.warn(`Runnable <${runnable_key}> will not run over <${input_file}> because it has been disabled`);
@@ -332,18 +332,25 @@ class Tommy {
 
 				// Ensure that always Destination file is processed
 				const r = runnable_key.split('.');
-				const output_files = await runnables[r[0]][r[1]](this, this.getDstFilePath(input_file));
+				try {
 
-				await this.saveOutput({
-					input_file: input_file,
-					input_hash: input_hash,
-					output_files: output_files,
-					runnable_key: runnable_key,
-					runnable_algo_version: runnable_algo_version,
-					runnable_config: runnable_config
-				});
+					const output_files = await runnables[r[0]][r[1]](this, this.getDstFilePath(input_file));
 
-				resolve(output_files);
+					await this.saveOutput({
+						input_file: input_file,
+						input_hash: input_hash,
+						output_files: output_files,
+						runnable_key: runnable_key,
+						runnable_algo_version: runnable_algo_version,
+						runnable_config: runnable_config
+					});
+
+					resolve(output_files);
+
+				} catch (err) {
+					console.error(`Error while executing runnable <${input_file}, ${runnable_key}>`, err);
+					resolve(null);
+				}
 			});
 		});
 	}
