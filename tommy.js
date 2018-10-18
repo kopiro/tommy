@@ -226,49 +226,60 @@ class Tommy {
 					console.info(`Processing <${file}>`);
 					console.group(file);
 
-					const extension = util.getExtension(file);
+					const extension = util.getExtension(file).toLowerCase();
 
-					// Always first copy item to let other processor works on DST files
-					await this.runRunnable('processor.copy', file);
+					// Define the runnables keys that will
+					// be executed at the end.
+					// The first task MUST always be processor.copy
+					let runnables_keys = ['processor.copy'];
 
 					if (/\.(jpg|jpeg|png)$/i.test(file)) {
 						const format = /\.png$/.test(file) ? 'png' : 'jpg';
-
-						const images_resized = await this.runRunnable('processor.resize', file);
-						const image_processed = await this.runRunnable('processor.image', file);
-						const image_optimized = await this.runRunnable(`processor.${format}`, file);
-						const lazy_load_blurred_image = await this.runRunnable('processor.lazyLoadBlurried', file);
-						const image_webp = await this.runRunnable('converter.webp', file);
-						const test_image = await this.runRunnable('tester.image', file);
+						runnables_keys = runnables_keys.concat([
+							'processor.resize',
+							'processor.image',
+							`processor.${format}`,
+							'processor.lazyLoadBlurried',
+							'converter.webp',
+							'tester.image'
+						]);
 
 					} else if (/\.gif$/i.test(file)) {
-						const image_optimized = await this.runRunnable('processor.gif', file);
+						runnables_keys = runnables_keys.concat(['processor.gif']);
 
 					} else if (/\.svg$/i.test(file)) {
-						const image_optimized = await this.runRunnable('processor.svg', file);
+						runnables_keys = runnables_keys.concat(['processor.svg']);
 
 					} else if (/\.(mov|avi|m4v|3gp|m2v|ogg|mp4)$/i.test(file)) {
 						for (let format of ['mp4', 'webm']) {
-							if (extension.toLowerCase() != format) {
-								const video_converted = await this.runRunnable(`converter.${format}`, file);
+							if (extension != format) {
+								runnables_keys = runnables_keys.concat([`converter.${format}`]);
 							}
 						}
-
-						const video_poster = await this.runRunnable('processor.poster', file);
-						const video_thumbs = await this.runRunnable('processor.videoThumbs', file);
-						const test_video = await this.runRunnable('tester.video', file);
+						runnables_keys = runnables_keys.concat([
+							'processor.poster',
+							'processor.videoThumbs',
+							'tester.video'
+						]);
 
 					} else if (/\.(ogg|wav|aif|ac3|aac)$/i.test(file)) {
-						const audio_mp3 = await this.runRunnable('converter.mp3', file);
+						runnables_keys = runnables_keys.concat(['converter.mp3']);
 
 					} else if (/\.(ttf|otf)$/i.test(file)) {
 						for (let format of ['ttf', 'otf', 'svg', 'eot', 'woff', 'woff2']) {
-							if (extension.toLowerCase() != format) {
-								const font_converted = await this.runRunnable(`converter.${format}`, file);
+							if (extension != format) {
+								runnables_keys = runnables_keys.concat([`converter.${format}`]);
 							}
 						}
+						runnables_keys = runnables_keys.concat([
+							'tester.font'
+						]);
 
-						const test_font = await this.runRunnable(`tester.font`, file);
+					}
+
+					// Run all runnables defined
+					for (let e of runnables_keys) {
+						await this.runRunnable(e, file);
 					}
 
 					console.groupEnd();
