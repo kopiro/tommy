@@ -41,25 +41,21 @@ if (argv.webserver) {
 
 } else {
 
-	(async () => {
+	require('console-ultimate/global').replace();
 
-		require('console-ultimate/global').replace();
+	let config = null;
+	if (argv.config) {
+		config = require(require('fs').realpathSync(argv.config));
+	}
 
-		try {
-			let config = null;
-			if (argv.config) {
-				config = require(require('fs').realpathSync(argv.config));
-			}
-
-			let tommy = new Tommy(argv.src, argv.dst, config, argv.force);
-			await tommy.run();
+	let tommy = new Tommy(argv.src, argv.dst, config, argv.force, argv.watch);
+	tommy.run()
+		.then(pfiles => {
 			process.exit(0);
-
-		} catch (err) {
+		})
+		.catch(err => {
 			console.error(err || 'Unexpected error');
 			process.exit(1);
-		}
-
-	})();
+		});
 
 }

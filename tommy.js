@@ -4,6 +4,7 @@ const find = require('find');
 const path = require('path');
 const md5 = require('md5-file');
 const objectAssignDeep = require('object-assign-deep');
+const chokidar = require('chokidar');
 
 const util = require('./lib/util');
 const processor = require('./lib/processor');
@@ -25,7 +26,7 @@ const TABLE_NAME = `outputs_${TABLE_VERSION}`;
 
 class Tommy {
 
-	constructor(src, dst, config = null, force = false) {
+	constructor(src, dst, config = null, force = false, watch = false) {
 		this.src = src;
 		this.dst = dst;
 		this.config = objectAssignDeep(
@@ -33,6 +34,7 @@ class Tommy {
 			config || {}
 		);
 		this.force = force;
+		this.watch = watch;
 	}
 
 	getRunnableConfig(runnable_key) {
@@ -51,6 +53,8 @@ class Tommy {
 	async createDatabase() {
 		return new Promise((resolve, reject) => {
 			if (Tommy.db) return resolve();
+
+			console.info('Creating database...');
 
 			const dbpath = path.join(this.dst, DB_FILENAME);
 
@@ -73,6 +77,17 @@ class Tommy {
 			)`, (err) => {
 				if (err) return reject();
 				resolve();
+			});
+		});
+	}
+
+	async getOutputsByInputFile(input_file) {
+		return new Promise((resolve, reject) => {
+			const fetch_stmt = Tommy.db.prepare(`SELECT * FROM ${TABLE_NAME} WHERE input_file = ?`);
+
+			fetch_stmt.all([input_file], (err, rows) => {
+				if (err) return reject(err);
+				return resolve(rows);
 			});
 		});
 	}
@@ -182,9 +197,9 @@ class Tommy {
 		return true;
 	}
 
-	async cleanOutput(out) {
+	async cleanOutput(row) {
 		try {
-			let output_files = JSON.parse(out.output_files);
+			let output_files = JSON.parse(row.output_files);
 			if (typeof output_files === 'string') output_files = [output_files];
 
 			for (let file of output_files) {
@@ -192,11 +207,18 @@ class Tommy {
 			}
 
 			await this.runDbStatement(Tommy.db.prepare(`DELETE FROM ${TABLE_NAME} WHERE input_file = ? AND runnable_key = ?`), [
-				out.input_file,
-				out.runnable_key
+				row.input_file,
+				row.runnable_key
 			]);
 		} catch (err) {
-			console.error('Error while cleaning output:', out);
+			console.error('Error while cleaning output:', row);
+		}
+	}
+
+	async cleanOutputByInputFile(input_file) {
+		const rows = await this.getOutputsByInputFile(input_file);
+		for (let row of rows) {
+			await this.cleanOutput(row);
 		}
 	}
 
@@ -217,7 +239,7 @@ class Tommy {
 		}
 	}
 
-	async runAllRunnables(files, outputs) {
+	async runAllRunnables(files) {
 		return new Promise(async (resolve, reject) => {
 			const pfiles = [];
 
@@ -329,15 +351,28 @@ class Tommy {
 					return resolve(null);
 				}
 
-				if (row != null) {
-					if (
-						row.input_hash == input_hash &&
-						row.runnable_algo_version == runnable_algo_version &&
-						row.runnable_config == JSON.stringify(runnable_config) &&
-						this.force == false
-					) {
-						console.debug(`Runnable <${input_file}, ${runnable_key}> has already been processed`);
-						const output_files = JSON.parse(row.output_files);
+				if (
+					row != null &&
+					row.input_hash == input_hash &&
+					row.runnable_algo_version == runnable_algo_version &&
+					row.runnable_config == JSON.stringify(runnable_config) &&
+					this.force == false
+				) {
+					console.debug(`Runnable <${input_file}, ${runnable_key}> has already been processed`);
+
+					let output_unsafe = false;
+					let output_files = JSON.parse(row.output_files);
+
+					// Check if all output files are sanes
+					if (typeof output_files === 'string') output_files = [output_files];
+					for (let out_file of output_files) {
+						if (!fs.existsSync(this.getDstFilePath(out_file))) {
+							output_unsafe = true;
+							break;
+						}
+					}
+
+					if (!output_unsafe) {
 						return resolve(output_files);
 					}
 				}
@@ -372,30 +407,13 @@ class Tommy {
 		});
 	}
 
-	// Init
-
-	async run() {
-		if (this.src == null) {
-			throw new Error('Set --src as input source directory');
-		}
-		this.src = fs.realpathSync(this.src);
-
-		if (this.dst == null) {
-			throw new Error('Set --dst as output source directory');
-		}
-		this.dst = fs.realpathSync(this.dst);
-
-		if (this.src === this.dst) {
-			throw new Error('Codardly refusing to run when SRC directory is equal to DST');
-		}
-
+	async processFiles() {
 		if (this.config.remoteSync == true) {
 			console.info('Syncing from remote...');
 			await uploader.syncFromRemote(this);
 		}
 
 		console.info('Collecting files...');
-		await this.createDatabase();
 		const files = await this.indexFiles();
 		const outputs = await this.getOutputs();
 
@@ -403,15 +421,86 @@ class Tommy {
 		await this.cleanDstDirectory(files, outputs);
 
 		console.info('Run runnables...');
-		const pfiles = await this.runAllRunnables(files, outputs);
+		const pfiles = await this.runAllRunnables(files);
 
 		if (this.config.remoteSync == true) {
 			console.info('Syncing to remote...');
 			await uploader.syncToRemote(this);
 		}
 
-		console.info('Done');
+		this.isProcessing = false;
+		console.info('Done!');
+
 		return pfiles;
+	}
+
+	async respondToWatchEvent(event, path) {
+		if (this.watchProcessing) {
+			return setTimeout(() => {
+				this.respondToWatchEvent(event, path);
+			}, 500);
+		}
+
+		this.watchProcessing = true;
+
+		const file = this.getCleanFileName(path);
+		console.info(`Processing watch event: ${event} <${file}>`);
+
+		try {
+			switch (event) {
+				case 'change':
+				case 'add':
+					await this.runAllRunnables([file]);
+					break;
+				case 'unlink':
+					await this.cleanOutputByInputFile(file);
+					break;
+			}
+		} catch (err) {
+			console.error(`Error while processing <${path}>`, err);
+		}
+
+		this.watchProcessing = false;
+	}
+
+	// Init
+
+	async run() {
+		return new Promise(async (resolve, reject) => {
+			if (this.src == null) {
+				return reject('Set --src as input source directory');
+			}
+			this.src = fs.realpathSync(this.src);
+
+			if (this.dst == null) {
+				return reject('Set --dst as output source directory');
+			}
+			this.dst = fs.realpathSync(this.dst);
+
+			if (this.src === this.dst) {
+				return reject('Codardly refusing to run when SRC directory is equal to DST');
+			}
+
+			let pfiles;
+			try {
+				await this.createDatabase();
+				pfiles = await this.processFiles();
+			} catch (err) {
+				return reject(err);
+			}
+
+			if (!this.watch) {
+				return resolve(pfiles);
+			}
+
+			console.info(`Start watching <${this.src}>...`);
+			this.watchProcessing = false;
+
+			chokidar.watch(this.src, {
+				persistent: true,
+				ignoreInitial: true
+			}).on('all', this.respondToWatchEvent.bind(this));
+		});
 	}
 }
 
