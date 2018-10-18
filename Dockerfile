@@ -64,6 +64,18 @@ RUN git clone https://github.com/fontforge/fontforge.git /usr/share/fontforge &&
 	make install && \
 	ldconfig
 
+# ------- CSS PROCESSORS ---------
+
+RUN npm -g install less
+
+RUN cd /usr/share && \
+	curl -L -o sass.tar.gz https://github.com/sass/dart-sass/releases/download/1.14.3/dart-sass-1.14.3-linux-x64.tar.gz && \
+	ls -la && \
+	tar -xvf sass.tar.gz && \
+	rm sass.tar.gz && \
+	cd dart-sass && \
+	ln -svf /usr/share/dart-sass/sass /usr/local/bin/sass
+
 # ------- APP ---------
 
 COPY package.json /app

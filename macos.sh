@@ -8,3 +8,4 @@ npm -g i svgo
 brew install fontforge
 brew install woff2
 brew install aws-cli
+npm -g install less sass
