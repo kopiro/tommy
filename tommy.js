@@ -275,6 +275,12 @@ class Tommy {
 							'tester.font'
 						]);
 
+					} else if (/\.(sass|scss)$/i.test(file)) {
+						runnables_keys = runnables_keys.concat(['processor.sass']);
+
+					} else if (/\.(less)$/i.test(file)) {
+						runnables_keys = runnables_keys.concat(['processor.less']);
+
 					}
 
 					// Run all runnables defined
