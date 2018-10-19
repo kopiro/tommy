@@ -81,24 +81,42 @@ class Tommy {
 		});
 	}
 
+	mapOutput(row) {
+		row.output_files = JSON.parse(row.output_files);
+		if (typeof row.output_files === 'string') row.output_files = [row.output_files];
+		return row;
+	}
+
+	async getOutputByInputFileAndRunnableKey(input_file, runnable_key) {
+		return new Promise((resolve, reject) => {
+			const fetch_stmt = Tommy.db.prepare(`SELECT * FROM ${TABLE_NAME} WHERE input_file = ? AND runnable_key = ?`);
+
+			fetch_stmt.get([input_file, runnable_key], (err, row) => {
+				if (err) return reject(err);
+				if (row == null) return resolve(null);
+				return resolve(this.mapOutput(row));
+			});
+		});
+	}
+
 	async getOutputsByInputFile(input_file) {
 		return new Promise((resolve, reject) => {
 			const fetch_stmt = Tommy.db.prepare(`SELECT * FROM ${TABLE_NAME} WHERE input_file = ?`);
 
 			fetch_stmt.all([input_file], (err, rows) => {
 				if (err) return reject(err);
-				return resolve(rows);
+				return resolve(rows.map(this.mapOutput));
 			});
 		});
 	}
 
-	async getOutputs() {
+	async getAllOutputs() {
 		return new Promise((resolve, reject) => {
 			const fetch_stmt = Tommy.db.prepare(`SELECT * FROM ${TABLE_NAME}`);
 
 			fetch_stmt.all([], (err, rows) => {
 				if (err) return reject(err);
-				return resolve(rows);
+				return resolve(rows.map(this.mapOutput));
 			});
 		});
 	}
@@ -111,7 +129,7 @@ class Tommy {
 				continue;
 			}
 
-			console.debug(`Adding to file list <${filepath}>`);
+			// console.debug(`Adding to file list <${filepath}>`);
 			files.push(this.getCleanFileName(filepath));
 		}
 
@@ -147,29 +165,27 @@ class Tommy {
 		runnable_algo_version,
 		runnable_config
 	}) {
-		if (output_files == false || output_files == null) return;
-
 		return new Promise(async resolve => {
-			if (typeof output_files === 'string') {
-				output_files = this.getCleanFileName(output_files);
-			} else {
-				output_files = output_files.map(e => this.getCleanFileName(e));
+			if (!output_files) {
+				return resolve(false);
 			}
+
+			// Wrap everything in an array
+			if (typeof output_files === 'string') output_files = [output_files];
+			output_files = output_files.map(e => this.getCleanFileName(e));
 
 			await this.runDbStatement(
 				Tommy.db.prepare(`DELETE FROM ${TABLE_NAME} WHERE input_file = ? AND runnable_key = ?`),
 				[input_file, runnable_key]
 			);
 
-			const stmt = Tommy.db.prepare(`
-			INSERT INTO ${TABLE_NAME} 
-			(input_file, input_hash, run_at, output_files, runnable_key, runnable_algo_version, runnable_config) 
-			VALUES 
-			(?, 			 ?, 			 ?, 		?,				 ?,		  ?,							 ?)
-			`);
-
 			try {
-				await this.runDbStatement(stmt, [
+				await this.runDbStatement(Tommy.db.prepare(`
+				INSERT INTO ${TABLE_NAME} 
+				(input_file, input_hash, run_at, output_files, runnable_key, runnable_algo_version, runnable_config) 
+				VALUES 
+				(?, 			 ?, 			 ?, 		?,				 ?,		  ?,							 ?)
+				`), [
 					input_file,
 					input_hash,
 					Date.now(),
@@ -182,7 +198,7 @@ class Tommy {
 				console.error(err);
 			}
 
-			resolve();
+			resolve(true);
 		});
 	}
 
@@ -198,11 +214,10 @@ class Tommy {
 	}
 
 	async cleanOutput(row) {
-		try {
-			let output_files = JSON.parse(row.output_files);
-			if (typeof output_files === 'string') output_files = [output_files];
+		if (row == null) return;
 
-			for (let file of output_files) {
+		try {
+			for (let file of row.output_files) {
 				await this.deleteDstFile(file);
 			}
 
@@ -211,7 +226,7 @@ class Tommy {
 				row.runnable_key
 			]);
 		} catch (err) {
-			console.error('Error while cleaning output:', row);
+			console.error(`Error while cleaning output for <${row.input_file}, ${row.runnable_key}>`, err);
 		}
 	}
 
@@ -324,6 +339,25 @@ class Tommy {
 		});
 	}
 
+	compareOutput(row, input_hash, runnable_algo_version, runnable_config) {
+		if (row == null) return false;
+		return (
+			row.input_hash == input_hash &&
+			row.runnable_algo_version == runnable_algo_version &&
+			row.runnable_config == JSON.stringify(runnable_config)
+		);
+	}
+
+	checkOutputSafeness(row) {
+		// Check if all output files are sanes
+		for (let file of row.output_files) {
+			if (!fs.existsSync(this.getDstFilePath(file))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Run a runnable item
 	 *
@@ -333,77 +367,64 @@ class Tommy {
 	 * @memberof Tommy
 	 */
 	async runRunnable(runnable_key, input_file) {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
+			const input_hash = this.getFileHash(input_file);
 			const runnable_algo_version = this.getRunnableAlgoVersion(runnable_key);
 			const runnable_config = this.getRunnableConfig(runnable_key);
-			const input_hash = this.getFileHash(input_file);
 
-			const stmt = Tommy.db.prepare(`SELECT * FROM ${TABLE_NAME} WHERE input_file = ? AND runnable_key = ? LIMIT 1`);
-			stmt.get([input_file, runnable_key], async (err, row) => {
-				if (err) return resolve(null);
+			let row;
+			try {
+				row = await this.getOutputByInputFileAndRunnableKey(input_file, runnable_key);
+			} catch (err) {
+				row = null;
+			}
 
-				if (runnable_config.enabled == false) {
-					console.warn(`Runnable <${runnable_key}> will not run over <${input_file}> because it has been disabled`);
-					if (row != null) {
-						// Clean old files generated by an old processing
-						await this.cleanOutput(row);
-					}
-					return resolve(null);
+			if (runnable_config.enabled == false) {
+				console.warn(`Runnable <${runnable_key}> will not run over <${input_file}> because it has been disabled`);
+
+				// Delete old items processed by this item
+				await this.cleanOutput(row);
+
+				return resolve(null);
+			}
+
+			if (
+				this.force == false &&
+				this.compareOutput(row, input_hash, runnable_algo_version, runnable_config) == true
+			) {
+				// console.debug(`Runnable <${input_file}, ${runnable_key}> has already been processed`);
+
+				if (this.checkOutputSafeness(row)) {
+					return resolve(row.output_files);
 				}
 
-				if (
-					row != null &&
-					row.input_hash == input_hash &&
-					row.runnable_algo_version == runnable_algo_version &&
-					row.runnable_config == JSON.stringify(runnable_config) &&
-					this.force == false
-				) {
-					console.debug(`Runnable <${input_file}, ${runnable_key}> has already been processed`);
+				console.warn(`Output for <${input_file}, ${runnable_key}> is unsafe, probably some files have been deleted in your destination directory (you should not do it) - reprocessing item`);
+			}
 
-					let output_unsafe = false;
-					let output_files = JSON.parse(row.output_files);
+			// Clean old files generated by and old configuration or different file
+			await this.cleanOutput(row);
 
-					// Check if all output files are sanes
-					if (typeof output_files === 'string') output_files = [output_files];
-					for (let out_file of output_files) {
-						if (!fs.existsSync(this.getDstFilePath(out_file))) {
-							output_unsafe = true;
-							break;
-						}
-					}
+			// Ensure that always Destination file is processed
+			try {
 
-					if (!output_unsafe) {
-						return resolve(output_files);
-					}
-				}
-
-				if (row != null) {
-					// Clean old files generated by and old configuration or different file
-					await this.cleanOutput(row);
-				}
-
-				// Ensure that always Destination file is processed
 				const r = runnable_key.split('.');
-				try {
+				const output_files = await runnables[r[0]][r[1]](this, this.getDstFilePath(input_file));
 
-					const output_files = await runnables[r[0]][r[1]](this, this.getDstFilePath(input_file));
+				await this.saveOutput({
+					input_file: input_file,
+					input_hash: input_hash,
+					output_files: output_files,
+					runnable_key: runnable_key,
+					runnable_algo_version: runnable_algo_version,
+					runnable_config: runnable_config
+				});
 
-					await this.saveOutput({
-						input_file: input_file,
-						input_hash: input_hash,
-						output_files: output_files,
-						runnable_key: runnable_key,
-						runnable_algo_version: runnable_algo_version,
-						runnable_config: runnable_config
-					});
+				resolve(output_files);
 
-					resolve(output_files);
-
-				} catch (err) {
-					console.error(`Error while executing runnable <${input_file}, ${runnable_key}>`, err);
-					resolve(null);
-				}
-			});
+			} catch (err) {
+				console.error(`Error while executing runnable <${input_file}, ${runnable_key}>`, err);
+				resolve(null);
+			}
 		});
 	}
 
@@ -415,7 +436,7 @@ class Tommy {
 
 		console.info('Collecting files...');
 		const files = await this.indexFiles();
-		const outputs = await this.getOutputs();
+		const outputs = await this.getAllOutputs();
 
 		console.info('Cleaning destination directory...');
 		await this.cleanDstDirectory(files, outputs);
