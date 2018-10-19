@@ -17,6 +17,8 @@ Tommy also gives you the option of syncing all your processed assets to a S3 buc
 - `--webserver` will spawn an HTTP webserver that access via `POST /` a request to run
 - `--port` is the webserver port (default: 80)
 
+- `--watch` will enable a persistent watch over the src directory to detect instant file changes
+
 ### WARNING: Set `--dst` option to an empty directory. This directory should only be used by Tommy and could potentially delete all files in that directory if started with a weird configuration / corrupted database
 
 ## Configuration
