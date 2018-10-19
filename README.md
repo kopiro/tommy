@@ -1,6 +1,6 @@
 # Tommy: Web Assets converter and optimizer
 
-<img src="render.gif" />
+<img width="300px" src="render.gif" />
 
 Tommy will process and optimize all your static assets ready for the web, no matter what the file extension happens to be;
 and, to avoid wasting time, it will also save processed items so that unmodified assets will not be processed further.
@@ -17,7 +17,9 @@ Tommy also gives you the option of syncing all your processed assets to a S3 buc
 - `--webserver` will spawn an HTTP webserver that access via `POST /` a request to run
 - `--port` is the webserver port (default: 80)
 
-### WARNING: Set `--dst` option to an empty directory. This directory should only be used by Tommy and could potentially delete all files in that directory if started with a weird configuration / corrupted database
+- `--watch` will enable a persistent watch over the src directory to detect instant file changes
+
+### ⚡️️️ Always set `--dst` option to an empty directory: this directory should only be used by Tommy because files in could be potentially deleted if Tommy is started with a weird configuration or a corrupted database ⚡️
 
 ## Configuration
 
