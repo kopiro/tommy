@@ -78,6 +78,20 @@
 		"suffix": "-blurried.jpg",
 		"size": 10
 	},
+	"processor.favicon": {
+		"enabled": true,
+		"browserconfig": true,
+		"test": true,
+		"webmanifest": {
+			"name": "",
+			"short_name": "",
+			"theme_color": "#336699",
+			"background_color": "#336699",
+			"display": "standalone"
+		},
+		"tileColor": "#336699",
+		"themeColor": "#336699"
+	},
 	"ignore": [
 		".DS_Store",
 		".gitignore"
