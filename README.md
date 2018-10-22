@@ -68,66 +68,77 @@ Example:
 ...
 ```
 
-| Key                        | Applicable to | Description                     | Default |
-| -------------------------- | ------------- | ------------------------------- | ------- |
-| processor.resize           | images        | various resized images          | true    |
-| processor.image            | images        | `imagemagick` processor         | true    |
-| processor.lazyLoadBlurried | images        | a blurry image                  | true    |
-| converter.webp             | images        | conversion to WEBP              | true    |
-| tester.image               | images        | sample HTML page to test        | true    |
-| processor.jpg              | JPGs          | `jpegoptim` optimizer           | true    |
-| processor.png              | PNGs          | `pngquant` optimizer            | true    |
-| processor.gif              | GIFs          | `gifsicle` optimizer            | true    |
-| processor.svg              | SVGs          | `svgo` optimizer                | true    |
-| processor.poster           | videos        | poster image                    | true    |
-| processor.videoThumbs      | videos        | thumbnails extracted from video | true    |
-| converter.mp4              | videos        | conversion to MP4               | true    |
-| converter.webm             | videos        | conversion to WEBM              | true    |
-| tester.video               | videos        | sample HTML page to test        | true    |
-| converter.mp3              | audios        | conversion to MP3               | true    |
-| converter.ttf              | fonts         | conversion to TTF               | true    |
-| converter.otf              | fonts         | conversion to OTF               | true    |
-| converter.eot              | fonts         | conversion to EOT               | true    |
-| converter.svg              | fonts         | conversion to SVG               | true    |
-| converter.woff             | fonts         | conversion to WOFF              | true    |
-| converter.woff2            | fonts         | conversion to WOFF2             | true    |
-| tester.font                | fonts         | sample HTML page to test        | true    |
+| Key                        | Applicable to | Description                           | Default |
+| -------------------------- | ------------- | ------------------------------------- | ------- |
+| processor.resize           | images        | various resized images                | true    |
+| processor.image            | images        | `imagemagick` processor               | true    |
+| processor.lazyLoadBlurried | images        | a blurry image                        | true    |
+| converter.webp             | images        | conversion to WEBP                    | true    |
+| tester.image               | images        | sample HTML page to test              | true    |
+| processor.jpg              | JPGs          | `jpegoptim` optimizer                 | true    |
+| processor.png              | PNGs          | `pngquant` optimizer                  | true    |
+| processor.gif              | GIFs          | `gifsicle` optimizer                  | true    |
+| processor.svg              | SVGs          | `svgo` optimizer                      | true    |
+| processor.poster           | videos        | poster image                          | true    |
+| processor.videoThumbs      | videos        | thumbnails extracted from video       | true    |
+| processor.favicon          | favicon       | generate all files needed for favicon | true    |
+| converter.mp4              | videos        | conversion to MP4                     | true    |
+| converter.webm             | videos        | conversion to WEBM                    | true    |
+| tester.video               | videos        | sample HTML page to test              | true    |
+| converter.mp3              | audios        | conversion to MP3                     | true    |
+| converter.ttf              | fonts         | conversion to TTF                     | true    |
+| converter.otf              | fonts         | conversion to OTF                     | true    |
+| converter.eot              | fonts         | conversion to EOT                     | true    |
+| converter.svg              | fonts         | conversion to SVG                     | true    |
+| converter.woff             | fonts         | conversion to WOFF                    | true    |
+| converter.woff2            | fonts         | conversion to WOFF2                   | true    |
+| tester.font                | fonts         | sample HTML page to test              | true    |
 
 ### `processor.resize`
 
-| Key               | Type     | Description                                       | Default                |
-| ----------------- | -------- | ------------------------------------------------- | ---------------------- |
-| resize.dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200]     |
-| resize.quality    | number   | Quality of images                                 | 80                     |
-| resize.suffix     | string   | Suffix to apply to new files                      | "-resized-${i}.${ext}" |
+| Key        | Type     | Description                                       | Default                |
+| ---------- | -------- | ------------------------------------------------- | ---------------------- |
+| dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200]     |
+| quality    | number   | Quality of images                                 | 80                     |
+| suffix     | string   | Suffix to apply to new files                      | "-resized-${i}.${ext}" |
 
 ### `processor.image`
 
-| Key           | Type   | Description      | Default |
-| ------------- | ------ | ---------------- | ------- |
-| image.quality | number | Quality of image | 80      |
+| Key     | Type   | Description      | Default |
+| ------- | ------ | ---------------- | ------- |
+| quality | number | Quality of image | 80      |
 
 ### `processor.videoThumbs`
 
-| Key                 | Type   | Description                  | Default           |
-| ------------------- | ------ | ---------------------------- | ----------------- |
-| videoThumbs.count   | number | How many thumbnails extract  | 5                 |
-| videoThumbs.size    | number | Length of longest side       | 400               |
-| videoThumbs.quality | number | Quality of image             | 80                |
-| videoThumbs.suffix  | string | Suffix to apply to new files | "-thumb-${i}.jpg" |
+| Key     | Type   | Description                  | Default           |
+| ------- | ------ | ---------------------------- | ----------------- |
+| count   | number | How many thumbnails extract  | 5                 |
+| size    | number | Length of longest side       | 400               |
+| quality | number | Quality of image             | 80                |
+| suffix  | string | Suffix to apply to new files | "-thumb-${i}.jpg" |
 
 ### `processor.lazyLoadBlurried`
 
-| Key                     | Type   | Description                  | Default         |
-| ----------------------- | ------ | ---------------------------- | --------------- |
-| lazyLoadBlurried.size   | number | Length of longest side       | 10              |
-| lazyLoadBlurried.suffix | string | Suffix to apply to new files | "-blurried.jpg" |
+| Key    | Type   | Description                  | Default         |
+| ------ | ------ | ---------------------------- | --------------- |
+| size   | number | Length of longest side       | 10              |
+| suffix | string | Suffix to apply to new files | "-blurried.jpg" |
 
 ### `processor.poster`
 
-| Key           | Type   | Description                  | Default       |
-| ------------- | ------ | ---------------------------- | ------------- |
-| poster.suffix | string | Suffix to apply to new files | "-poster.jpg" |
+| Key    | Type   | Description                  | Default       |
+| ------ | ------ | ---------------------------- | ------------- |
+| suffix | string | Suffix to apply to new files | "-poster.jpg" |
+
+### `processor.favicon`
+
+| Key           | Type   | Description                                                                             | Default           |
+| ------------- | ------ | --------------------------------------------------------------------------------------- | ----------------- |
+| webmanifest   | object | JSON object to extend for the `site.webmanifest`. Set to `false` to disable generation. | _see config.json_ |
+| browserconfig | bool   | Set to `false` to disable generation of `browserconfig.xml`                             | true              |
+| test          | bool   | Set to `false` to disable HTML test page (`favicon.html`)                               | true              |
+| tileColor     | string | Color of the tile for Windows                                                           | "#336699"         |
+| themeColor    | string | Color of the theme for Chrome Mobile                                                    | "#336699"         |
 
 ## How to: run with Docker
 

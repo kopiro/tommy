@@ -270,7 +270,10 @@ class Tommy {
 					// The first task MUST always be processor.copy
 					let runnables_keys = ['processor.copy'];
 
-					if (/\.(jpg|jpeg|png)$/i.test(file)) {
+					if (/favicon\.png$/i.test(file)) {
+						runnables_keys = runnables_keys.concat(['processor.favicon']);
+
+					} else if (/\.(jpg|jpeg|png)$/i.test(file)) {
 						const format = /\.png$/.test(file) ? 'png' : 'jpg';
 						runnables_keys = runnables_keys.concat([
 							'processor.resize',
