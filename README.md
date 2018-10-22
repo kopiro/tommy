@@ -1,6 +1,6 @@
 # Tommy: Web Assets converter and optimizer
 
-<img width="300px" src="render.gif" />
+<img width="80%" src="render.gif" />
 
 Tommy will process and optimize all your static assets ready for the web, no matter what the file extension happens to be;
 and, to avoid wasting time, it will also save processed items so that unmodified assets will not be processed further.
