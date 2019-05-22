@@ -1,5 +1,4 @@
-node_modules
+node_modules/
+.test/
 .env
-.awscredentials
-.test
 .config.ext.json

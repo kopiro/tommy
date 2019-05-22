@@ -7,4 +7,4 @@ touch .config.ext.json
 --src .test/src \
 --dst .test/dst \
 --config .config.ext.json \
-$1
+"$1"

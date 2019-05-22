@@ -1,36 +1,36 @@
 {
-	"name": "kopiro-tommy",
-	"version": "1.6.0",
-	"description": "Web Assets converter and optimizer",
-	"main": "tommy.js",
-	"module": "tommy.js",
-	"bin": {
-		"tommy": "cli.js"
-	},
-	"scripts": {},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/kopiro/tommy.git"
-	},
-	"author": "Flavio De Stefano <destefano.flavio@gmail.com>",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/kopiro/tommy/issues"
-	},
-	"homepage": "https://github.com/kopiro/tommy#readme",
-	"dependencies": {
-		"chokidar": "^2.0.4",
-		"console-ultimate": "^2.9.0",
-		"express": "^4.16.4",
-		"find": "^0.2.9",
-		"image-size": "^0.6.3",
-		"md5-file": "^4.0.0",
-		"object-assign-deep": "^0.4.0",
-		"pkg-dir": "^3.0.0",
-		"sqlite3": "^4.0.2",
-		"yargs": "^12.0.2"
-	},
-	"devDependencies": {
-		"rollup": "^0.66.6"
-	}
+  "name": "kopiro-tommy",
+  "version": "1.6.0",
+  "description": "Web Assets converter and optimizer",
+  "main": "tommy.js",
+  "module": "tommy.js",
+  "bin": {
+    "tommy": "cli.js"
+  },
+  "scripts": {
+    "publish": "./scripts/publish.sh",
+    "deps-macos": "./scripts/macos.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kopiro/tommy.git"
+  },
+  "author": "Flavio De Stefano <destefano.flavio@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kopiro/tommy/issues"
+  },
+  "homepage": "https://github.com/kopiro/tommy#readme",
+  "dependencies": {
+    "chokidar": "^2.0.4",
+    "console-ultimate": "^2.9.0",
+    "express": "^4.16.4",
+    "find": "^0.2.9",
+    "image-size": "^0.6.3",
+    "md5-file": "^4.0.0",
+    "object-assign-deep": "^0.4.0",
+    "pkg-dir": "^3.0.0",
+    "sqlite3": "^4.0.2",
+    "yargs": "^12.0.2"
+  }
 }
