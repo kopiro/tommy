@@ -1,2 +1,0 @@
-#!/bin/bash
-./cli.js
