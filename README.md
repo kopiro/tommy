@@ -203,14 +203,14 @@ By settings `enabled: false` in a key, you'll disable that service.
 
 _These are the general settings used for video. You can override manually in every section_
 
-| Key         | Type   | Description                                                                                                   | Default      |
-| ----------- | ------ | ------------------------------------------------------------------------------------------------------------- | ------------ |
-| audioCodec  | string | The coded to use for audio                                                                                    | null         |
-| crf         | number | The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible. | 23           |
-| pixelFormat | string | It uses full resolution for brightness and a smaller resolution for color.                                    | "yuv420p"    |
-| mapMetadata | string | Choose to keep/remove metadata                                                                                | "-1"         |
-| movFlags    | string | Movie flags to pass to ffmpeg                                                                                 | "+faststart" |
-| preset      | string | Will provide a certain encoding speed to compression ratio.                                                   | "veryslow"   |
+| Key         | Type   | Description                                                                                                   | Default        |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------- | -------------- |
+| audioCodec  | string | The coded to use for audio                                                                                    | `null`         |
+| crf         | number | The range of the CRF scale is 0–51, where 0 is lossless, 23 is the default, and 51 is worst quality possible. | `23`           |
+| pixelFormat | string | It uses full resolution for brightness and a smaller resolution for color.                                    | `"yuv420p"`    |
+| mapMetadata | string | Choose to keep/remove metadata                                                                                | `"-1"`         |
+| movFlags    | string | Movie flags to pass to ffmpeg                                                                                 | `"+faststart"` |
+| preset      | string | Will provide a certain encoding speed to compression ratio.                                                   | `"veryslow"`   |
 
 ### converter.webm
 
