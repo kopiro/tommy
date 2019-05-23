@@ -92,7 +92,7 @@ Example:
 | ------ | -------- | ----------------- | ----------------- |
 | ignore | string[] | Pattern to ignore | _see config.json_ |
 
-## Enabling/Disabling services
+## Available services
 
 By settings `enabled: false` in a key, you'll disable that service.
 
@@ -133,6 +133,8 @@ Example:
 | converter.woff             | fonts      | converts to WOFF format                                                                            |
 | converter.woff2            | fonts      | converts to WOFF2 format                                                                           |
 | tester.font                | fonts      | generates a sample HTML page to test all differents formats                                        |
+
+## Specific configurations for services
 
 ### `processor.resize`
 
