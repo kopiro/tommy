@@ -94,9 +94,54 @@ Example:
 
 ## Available services
 
-By settings `enabled: false` in a key, you'll disable that service.
+### Images
 
-Example:
+| Key                        | Applies to   | Description                                                                                    |
+| -------------------------- | ------------ | ---------------------------------------------------------------------------------------------- |
+| processor.resize           | \*           | resize the image in differents formats                                                         |
+| processor.image            | \*           | optimize the image                                                                             |
+| processor.lazyLoadBlurried | \*           | generates a very small blurried image that can be used before loading final image in lazy load |
+| converter.webp             | \*           | converts to WEBP format                                                                        |
+| tester.image               | \*           | generates a sample HTML page to test all differents formats                                    |
+| processor.jpg              | \*.jpg       | optimizes the JPG using `jpegoptim`                                                            |
+| processor.png              | \*.png       | optimizes the PNG using `pngquant`                                                             |
+| processor.gif              | \*.gif       | optimizes the GIF using `gifsicle`                                                             |
+| processor.svg              | \*.svg       | optimizes the SVG using `svgo`                                                                 |
+| processor.favicon          | /favicon.png | generates all images/icons needed in various browsers for the favicon                          |
+
+### Videos
+
+| Key                   | Applies to | Description                                                                                        |
+| --------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
+| processor.poster      | \*         | generates a representative poster image from the video to use as picture before loading the video. |
+| processor.videoThumbs | \*         | generates N different thumbs from the video                                                        |
+| converter.webm        | \*         | converts to WEBM format                                                                            |
+| converter.h264_mp4    | \*         | converts to H264 using MP4 container                                                               |
+| converter.av1_mp4     | \*         | converts to AV1 using MP4 container                                                                |
+| converter.hevc_mp4    | \*         | converts to HEVC using MP4 container                                                               |
+| tester.video          | \*         | generates a sample HTML page to test all differents formats                                        |
+
+### Fonts
+
+| Key             | Applies to | Description                                                 |
+| --------------- | ---------- | ----------------------------------------------------------- |
+| converter.ttf   | \*         | converts to TTF format                                      |
+| converter.otf   | \*         | converts to OTF format                                      |
+| converter.eot   | \*         | converts to EOT format                                      |
+| converter.svg   | \*         | converts to SVG format                                      |
+| converter.woff  | \*         | converts to WOFF format                                     |
+| converter.woff2 | \*         | converts to WOFF2 format                                    |
+| tester.font     | \*         | generates a sample HTML page to test all differents formats |
+
+### Audios
+
+| Key           | Applies to | Description            |
+| ------------- | ---------- | ---------------------- |
+| converter.mp3 | \*         | converts to MP3 format |
+
+### Disabling service
+
+By settings `enabled: false` in a key, you'll disable that service.
 
 ```json
 ...
@@ -105,34 +150,6 @@ Example:
 }
 ...
 ```
-
-| Key                        | Applies to | Description                                                                                        |
-| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
-| processor.resize           | images     | resize the image in differents formats                                                             |
-| processor.image            | images     | optimize the image                                                                                 |
-| processor.lazyLoadBlurried | images     | generates a very small blurried image that can be used before loading final image in lazy load.    |
-| converter.webp             | images     | converts to WEBP format                                                                            |
-| tester.image               | images     | generates a sample HTML page to test all differents formats                                        |
-| processor.jpg              | JPGs       | optimizes the JPG using `jpegoptim`                                                                |
-| processor.png              | PNGs       | optimizes the PNG using `pngquant`                                                                 |
-| processor.gif              | GIFs       | optimizes the GIF using `gifsicle`                                                                 |
-| processor.svg              | SVGs       | optimizes the SVG using `svgo`                                                                     |
-| processor.poster           | videos     | generates a representative poster image from the video to use as picture before loading the video. |
-| processor.videoThumbs      | videos     | generates N different thumbs from the video                                                        |
-| processor.favicon          | favicon    | generates all images/icons needed in various browsers for the favicon.                             |
-| converter.webm             | videos     | converts to WEBM format                                                                            |
-| converter.h264_mp4         | videos     | converts to H264 using MP4 container                                                               |
-| converter.av1_mp4          | videos     | converts to AV1 using MP4 container                                                                |
-| converter.hevc_mp4         | videos     | converts to HEVC using MP4 container                                                               |
-| tester.video               | videos     | generates a sample HTML page to test all differents formats                                        |
-| converter.mp3              | audios     | converts to MP3 format                                                                             |
-| converter.ttf              | fonts      | converts to TTF format                                                                             |
-| converter.otf              | fonts      | converts to OTF format                                                                             |
-| converter.eot              | fonts      | converts to EOT format                                                                             |
-| converter.svg              | fonts      | converts to SVG format                                                                             |
-| converter.woff             | fonts      | converts to WOFF format                                                                            |
-| converter.woff2            | fonts      | converts to WOFF2 format                                                                           |
-| tester.font                | fonts      | generates a sample HTML page to test all differents formats                                        |
 
 ## Specific configurations for services
 
