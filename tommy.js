@@ -300,13 +300,7 @@ class Tommy {
           } else if (/\.svg$/i.test(file)) {
             runnables_keys = runnables_keys.concat(["processor.svg"]);
           } else if (/\.(mov|avi|m4v|3gp|m2v|ogg|mp4)$/i.test(file)) {
-            for (let format of [
-              "mp4",
-              "webm",
-              "h264_mp4",
-              "av1_mp4",
-              "hevc_mp4"
-            ]) {
+            for (let format of ["webm", "h264_mp4", "av1_mp4", "hevc_mp4"]) {
               if (extension != format) {
                 runnables_keys = runnables_keys.concat([`converter.${format}`]);
               }
