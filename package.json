@@ -8,8 +8,11 @@
     "tommy": "cli.js"
   },
   "scripts": {
+    "postinstall": "./postinstall.sh",
     "docker-publish": "./scripts/docker-publish.sh",
-    "postinstall": "./postinstall.sh"
+    "download-samples": "./scripts/download-samples.sh",
+    "test-docker": "./scripts/test-docker.sh",
+    "test-macos": "./scripts/test-macos.sh"
   },
   "repository": {
     "type": "git",

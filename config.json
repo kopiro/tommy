@@ -20,10 +20,10 @@
     "videoCodec": "libx264"
   },
   "converter.av1_mp4": {
-    "enabled": true,
+    "enabled": false,
     "audioCodec": "libopus",
     "videoCodec": "libaom-av1",
-    "crf": 50
+    "crf": 30
   },
   "converter.hevc_mp4": {
     "enabled": true,

@@ -117,7 +117,7 @@ Example:
 | processor.videoThumbs | \*         | generates N different thumbs from the video                                                        |
 | converter.webm        | \*         | converts to WEBM format                                                                            |
 | converter.h264_mp4    | \*         | converts to H264 using MP4 container                                                               |
-| converter.av1_mp4     | \*         | converts to AV1 using MP4 container                                                                |
+| converter.av1_mp4     | \*         | converts to AV1 using MP4 container. **currently disabled by default because it's very very slow** |
 | converter.hevc_mp4    | \*         | converts to HEVC using MP4 container                                                               |
 | tester.video          | \*         | generates a sample HTML page to test all differents formats                                        |
 
@@ -238,11 +238,11 @@ _These are the general settings used for video. You can override manually in eve
 | ---------- | ------ | -------------------------- | ----------- |
 | videoCodec | string | The coded to use for video | `"libx265"` |
 
-## How: build locally Docker image
+## Howto: testing locally
 
-Download the repository, then run `./test-docker.sh`.
+You can use the command `npm run test-docker` to build the image and test against a test directory.
 
-It will build the Docker image locally and test with test present in current repository.
+If you need samples, run `npm run download-samples`
 
 ## License
 
