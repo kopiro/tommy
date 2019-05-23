@@ -1,6 +1,6 @@
-# Tommy: Web Assets converter and optimizer
+# Tommy: web assets optimverter
 
-Tommy will process and optimize all your static assets ready for the web.
+Tommy will process, optimize and convert all your static assets ready to use for the web.
 
 [![npm version](http://img.shields.io/npm/v/kopiro-tommy.svg?style=flat)](https://npmjs.org/package/kopiro-tommy "View this project on npm")
 [![docker version](https://img.shields.io/docker/pulls/kopiro/tommy.svg)](https://hub.docker.com/r/kopiro/tommy)
@@ -153,51 +153,51 @@ By settings `enabled: false` in a key, you'll disable that service.
 
 ## Specific configurations for services
 
-### `processor.resize`
+### processor.resize
 
-| Key        | Type     | Description                                       | Default                |
-| ---------- | -------- | ------------------------------------------------- | ---------------------- |
-| dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200]     |
-| quality    | number   | Quality of images                                 | 80                     |
-| suffix     | string   | Suffix to Applies to new files                    | "-resized-${i}.${ext}" |
+| Key        | Type     | Description                                       | Default                  |
+| ---------- | -------- | ------------------------------------------------- | ------------------------ |
+| dimensions | number[] | Dimensions of resized images in PX (longest side) | `[200,400,800,1200]`     |
+| quality    | number   | Quality of images                                 | `80`                     |
+| suffix     | string   | Suffix to Applies to new files                    | `"-resized-${i}.${ext}"` |
 
-### `processor.image`
+### processor.image
 
 | Key     | Type   | Description      | Default |
 | ------- | ------ | ---------------- | ------- |
-| quality | number | Quality of image | 80      |
+| quality | number | Quality of image | `80`    |
 
-### `processor.videoThumbs`
+### processor.videoThumbs
 
-| Key     | Type   | Description                    | Default            |
-| ------- | ------ | ------------------------------ | ------------------ |
-| count   | number | How many thumbnails extract    | 5                  |
-| size    | number | Length of longest side         | 400                |
-| quality | number | Quality of image               | 80                 |
-| suffix  | string | Suffix to Applies to new files | "-thumb-\${i}.jpg" |
+| Key     | Type   | Description                    | Default              |
+| ------- | ------ | ------------------------------ | -------------------- |
+| count   | number | How many thumbnails extract    | `5`                  |
+| size    | number | Length of longest side         | `400`                |
+| quality | number | Quality of image               | `80`                 |
+| suffix  | string | Suffix to Applies to new files | `"-thumb-\${i}.jpg"` |
 
-### `processor.lazyLoadBlurried`
+### processor.lazyLoadBlurried
+
+| Key    | Type   | Description                    | Default           |
+| ------ | ------ | ------------------------------ | ----------------- |
+| size   | number | Length of longest side         | `10`              |
+| suffix | string | Suffix to Applies to new files | `"-blurried.jpg"` |
+
+### processor.poster
 
 | Key    | Type   | Description                    | Default         |
 | ------ | ------ | ------------------------------ | --------------- |
-| size   | number | Length of longest side         | 10              |
-| suffix | string | Suffix to Applies to new files | "-blurried.jpg" |
+| suffix | string | Suffix to Applies to new files | `"-poster.jpg"` |
 
-### `processor.poster`
-
-| Key    | Type   | Description                    | Default       |
-| ------ | ------ | ------------------------------ | ------------- |
-| suffix | string | Suffix to Applies to new files | "-poster.jpg" |
-
-### `processor.favicon`
+### processor.favicon
 
 | Key           | Type   | Description                                                                             | Default           |
 | ------------- | ------ | --------------------------------------------------------------------------------------- | ----------------- |
 | webmanifest   | object | JSON object to extend for the `site.webmanifest`. Set to `false` to disable generation. | _see config.json_ |
-| browserconfig | bool   | Set to `false` to disable generation of `browserconfig.xml`                             | true              |
-| test          | bool   | Set to `false` to disable HTML test page (`favicon.html`)                               | true              |
-| tileColor     | string | Color of the tile for Windows                                                           | "#336699"         |
-| themeColor    | string | Color of the theme for Chrome Mobile                                                    | "#336699"         |
+| browserconfig | bool   | Set to `false` to disable generation of `browserconfig.xml`                             | `true`            |
+| test          | bool   | Set to `false` to disable HTML test page (`favicon.html`)                               | `true`            |
+| tileColor     | string | Color of the tile for Windows                                                           | `"#336699"`       |
+| themeColor    | string | Color of the theme for Chrome Mobile                                                    | `"#336699"`       |
 
 ## convert.{webm,\*\_mp4}
 
@@ -212,31 +212,31 @@ _These are the general settings used for video. You can override manually in eve
 | movFlags    | string | Movie flags to pass to ffmpeg                                                                                 | "+faststart" |
 | preset      | string | Will provide a certain encoding speed to compression ratio.                                                   | "veryslow"   |
 
-### `converter.webm`
+### converter.webm
 
-| Key        | Type   | Description           | Default      |
-| ---------- | ------ | --------------------- | ------------ |
-| videoCodec | string | _see general section_ | "libvpx-vp9" |
+| Key        | Type   | Description           | Default        |
+| ---------- | ------ | --------------------- | -------------- |
+| videoCodec | string | _see general section_ | `"libvpx-vp9"` |
 
-### `converter.h264_mp4`
+### converter.h264_mp4
 
-| Key        | Type   | Description           | Default   |
-| ---------- | ------ | --------------------- | --------- |
-| videoCodec | string | _see general section_ | "libx264" |
+| Key        | Type   | Description           | Default     |
+| ---------- | ------ | --------------------- | ----------- |
+| videoCodec | string | _see general section_ | `"libx264"` |
 
-### `converter.av1_mp4`
+### converter.av1_mp4
 
-| Key        | Type   | Description                                                                                 | Default      |
-| ---------- | ------ | ------------------------------------------------------------------------------------------- | ------------ |
-| videoCodec | string | _see general section_                                                                       | "libaom-av1" |
-| audioCoded | string | _see general section_                                                                       | "libopus"    |
-| crf        | number | _see general section_ (note: this value is higher due te different scale of this algorithm) | 50           |
+| Key        | Type   | Description                                                                                 | Default        |
+| ---------- | ------ | ------------------------------------------------------------------------------------------- | -------------- |
+| videoCodec | string | _see general section_                                                                       | `"libaom-av1"` |
+| audioCoded | string | _see general section_                                                                       | `"libopus"`    |
+| crf        | number | _see general section_ (note: this value is higher due te different scale of this algorithm) | `50`           |
 
-### `converter.hvec_mp4`
+### converter.hvec_mp4
 
-| Key        | Type   | Description                | Default   |
-| ---------- | ------ | -------------------------- | --------- |
-| videoCodec | string | The coded to use for video | "libx265" |
+| Key        | Type   | Description                | Default     |
+| ---------- | ------ | -------------------------- | ----------- |
+| videoCodec | string | The coded to use for video | `"libx265"` |
 
 ## How: build locally Docker image
 
