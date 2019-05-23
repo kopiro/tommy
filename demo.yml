@@ -1,0 +1,241 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /Users/kopiro/Projects/tommy
+
+  # Export additional ENV variables
+  env:
+    recording: true
+
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 135
+
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: auto
+
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+
+  # Quality
+  # 1 - 100
+  quality: 100
+
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: 1
+
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: Terminalizer
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+
+  # The size of the font
+  fontSize: 12
+
+  # The height of lines
+  lineHeight: 1
+
+  # The spacing between letters
+  letterSpacing: 0
+
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+
+# Records, feel free to edit them
+records:
+  - delay: 0
+    content: "\e[?1034hworkstation:tommy kopiro$ "
+  - delay: 100
+    content: "docker run -t \\\r\n> -v \"$(pwd)/.test/src\":\"/src\" \\\r\n> -v \"$(pwd)/.test/dst\":\"/dst\" \\\r\n> kopiro/tommy \\\r\n> --src \"/src\" \\\r\n> --dst \"/dst\""
+  - delay: 3156
+    content: "\r\n"
+  - delay: 1313
+    content: "\e[34m ⓘ Creating database...\e[39m\r\r\n"
+  - delay: 29
+    content: "\e[34m ⓘ Collecting files...\e[39m\r\r\n"
+  - delay: 25
+    content: "\e[34m ⓘ Cleaning destination directory...\e[39m\r\r\n\e[34m ⓘ Run runnables...\e[39m\r\r\n\e[34m ⓘ Processing </2.gif>\e[39m\r\r\n"
+  - delay: 29
+    content: " |  • Copying to </dst/2.gif>\r\r\n"
+  - delay: 49
+    content: " |  • Optimizing GIF </dst/2.gif>\r\r\n"
+  - delay: 142
+    content: "\e[34m ⓘ Processing </3.svg>\e[39m\r\r\n"
+  - delay: 41
+    content: " |  • Copying to </dst/3.svg>\r\r\n"
+  - delay: 61
+    content: " |  • Optimizing SVG </dst/3.svg>\r\r\n"
+  - delay: 5085
+    content: "\e[34m ⓘ Processing </Sample-jpg-image-2mb.jpg>\e[39m\r\r\n"
+  - delay: 35
+    content: " |  • Copying to </dst/Sample-jpg-image-2mb.jpg>\r\r\n"
+  - delay: 116
+    content: " |  • Resizing image to 200px to </dst/Sample-jpg-image-2mb-resized-200.jpg>\r\r\n"
+  - delay: 603
+    content: " |  • Resizing image to 400px to </dst/Sample-jpg-image-2mb-resized-400.jpg>\r\r\n"
+  - delay: 690
+    content: " |  • Resizing image to 800px to </dst/Sample-jpg-image-2mb-resized-800.jpg>\r\r\n"
+  - delay: 647
+    content: " |  • Resizing image to 1200px to </dst/Sample-jpg-image-2mb-resized-1200.jpg>\r\r\n"
+  - delay: 799
+    content: " |  • General optimizing image to </dst/Sample-jpg-image-2mb.jpg>\r\r\n"
+  - delay: 466
+    content: " |  • Optimizing JPEG </dst/Sample-jpg-image-2mb.jpg>\r\r\n"
+  - delay: 189
+    content: " |  • Extracting blurried image to </dst/Sample-jpg-image-2mb-blurried.jpg>\r\r\n"
+  - delay: 2170
+    content: " |  • Converting to WEBP </dst/Sample-jpg-image-2mb.webp>\r\r\n"
+  - delay: 1728
+    content: " |  • Extracting HTML test for image in </dst/Sample-jpg-image-2mb-test.html>\r\r\n"
+  - delay: 25
+    content: "\e[34m ⓘ Processing </Sample-jpg-image-500kb.jpg>\e[39m\r\r\n"
+  - delay: 20
+    content: " |  • Copying to </dst/Sample-jpg-image-500kb.jpg>\r\r\n"
+  - delay: 126
+    content: " |  • Resizing image to 200px to </dst/Sample-jpg-image-500kb-resized-200.jpg>\r\r\n"
+  - delay: 149
+    content: " |  • Resizing image to 400px to </dst/Sample-jpg-image-500kb-resized-400.jpg>\r\r\n"
+  - delay: 160
+    content: " |  • Resizing image to 800px to </dst/Sample-jpg-image-500kb-resized-800.jpg>\r\r\n"
+  - delay: 194
+    content: " |  • Resizing image to 1200px to </dst/Sample-jpg-image-500kb-resized-1200.jpg>\r\r\n"
+  - delay: 272
+    content: " |  • General optimizing image to </dst/Sample-jpg-image-500kb.jpg>\r\r\n"
+  - delay: 172
+    content: " |  • Optimizing JPEG </dst/Sample-jpg-image-500kb.jpg>\r\r\n"
+  - delay: 76
+    content: " |  • Extracting blurried image to </dst/Sample-jpg-image-500kb-blurried.jpg>\r\r\n"
+  - delay: 424
+    content: " |  • Converting to WEBP </dst/Sample-jpg-image-500kb.webp>\r\r\n"
+  - delay: 427
+    content: " |  • Extracting HTML test for image in </dst/Sample-jpg-image-500kb-test.html>\r\r\n"
+  - delay: 35
+    content: "\e[34m ⓘ Processing </Sample-pdf-5mb.pdf>\e[39m\r\r\n"
+  - delay: 80
+    content: " |  • Copying to </dst/Sample-pdf-5mb.pdf>\r\r\n"
+  - delay: 108
+    content: "\e[34m ⓘ Processing </Sample-png-image-1mb.png>\e[39m\r\r\n"
+  - delay: 43
+    content: " |  • Copying to </dst/Sample-png-image-1mb.png>\r\r\n"
+  - delay: 92
+    content: " |  • Resizing image to 200px to </dst/Sample-png-image-1mb-resized-200.png>\r\r\n"
+  - delay: 107
+    content: " |  • Resizing image to 400px to </dst/Sample-png-image-1mb-resized-400.png>\r\r\n"
+  - delay: 196
+    content: " |  • Resizing image to 800px to </dst/Sample-png-image-1mb-resized-800.png>\r\r\n"
+  - delay: 563
+    content: " | \e[33m ⚠ Skipping resizing to 1200px because 1200px is greater than image largest side (912px)\e[39m\r\r\n"
+  - delay: 46
+    content: " |  • General optimizing image to </dst/Sample-png-image-1mb.png>\r\r\n"
+  - delay: 548
+    content: " |  • Optimizing PNG </dst/Sample-png-image-1mb.png\r\r\n"
+  - delay: 2787
+    content: " |  • Extracting blurried image to </dst/Sample-png-image-1mb-blurried.jpg>\r\r\n"
+  - delay: 87
+    content: " |  • Converting to WEBP </dst/Sample-png-image-1mb.webp>\r\r\n"
+  - delay: 127
+    content: " |  • Extracting HTML test for image in </dst/Sample-png-image-1mb-test.html>\r\r\n"
+  - delay: 18
+    content: "\e[34m ⓘ Processing </big_buck_bunny_144p_1mb.3gp>\e[39m\r\r\n"
+  - delay: 25
+    content: " |  • Copying to </dst/big_buck_bunny_144p_1mb.3gp>\r\r\n"
+  - delay: 60
+    content: " |  • Converting to WEBM </dst/big_buck_bunny_144p_1mb.webm>\r\r\n"
+  - delay: 500
+    content: " |  • Converting to H264 </dst/big_buck_bunny_144p_1mb.h264.mp4>\r\r\n"
+  - delay: 500
+    content: " | \e[33m ⚠ Runnable <converter.av1_mp4> will not run over </big_buck_bunny_144p_1mb.3gp> because it has been disabled\e[39m\r\r\n"
+  - delay: 34
+    content: " |  • Converting to HEVC </dst/big_buck_bunny_144p_1mb.hevc.mp4>\r\r\n"
+  - delay: 500
+    content: " |  • Extracting poster to </dst/big_buck_bunny_144p_1mb-poster.jpg>\r\r\n"
+  - delay: 77
+    content: " |  • Extracting thumbnails to </dst/big_buck_bunny_144p_1mb-thumb-%d.jpg>\r\r\n"
+  - delay: 401
+    content: " |  • Extracting HTML test for video in </dst/big_buck_bunny_144p_1mb-test.html>\r\r\n"
+  - delay: 19
+    content: "\e[34m ⓘ Processing </big_buck_bunny_144p_1mb.mkv>\e[39m\r\r\n"
+  - delay: 16
+    content: " |  • Copying to </dst/big_buck_bunny_144p_1mb.mkv>\r\r\n"
+  - delay: 41
+    content: "\e[34m ⓘ Processing </big_buck_bunny_720p_1mb.flv>\e[39m\r\r\n"
+  - delay: 24
+    content: " |  • Copying to </dst/big_buck_bunny_720p_1mb.flv>\r\r\n"
+  - delay: 48
+    content: "\e[34m ⓘ Processing </big_buck_bunny_720p_1mb.mp4>\e[39m\r\r\n"
+  - delay: 23
+    content: " |  • Copying to </dst/big_buck_bunny_720p_1mb.mp4>\r\r\n"
+  - delay: 52
+    content: " |  • Converting to WEBM </dst/big_buck_bunny_720p_1mb.webm>\r\r\n"
+  - delay: 500
+    content: " |  • Converting to H264 </dst/big_buck_bunny_720p_1mb.h264.mp4>\r\r\n"
+  - delay: 500
+    content: " | \e[33m ⚠ Runnable <converter.av1_mp4> will not run over </big_buck_bunny_720p_1mb.mp4> because it has been disabled\e[39m\r\r\n"
+  - delay: 12
+    content: " |  • Converting to HEVC </dst/big_buck_bunny_720p_1mb.hevc.mp4>\r\r\n"
+  - delay: 500
+    content: " |  • Extracting poster to </dst/big_buck_bunny_720p_1mb-poster.jpg>\r\r\n"
+  - delay: 117
+    content: " |  • Extracting thumbnails to </dst/big_buck_bunny_720p_1mb-thumb-%d.jpg>\r\r\n"
+  - delay: 944
+    content: " |  • Extracting HTML test for video in </dst/big_buck_bunny_720p_1mb-test.html>\r\r\n"
+  - delay: 34
+    content: "\e[34m ⓘ Processing </wave.mp3>\e[39m\r\r\n"
+  - delay: 23
+    content: " |  • Copying to </dst/wave.mp3>\r\r\n"
+  - delay: 45
+    content: "\e[34m ⓘ Done!\e[39m\r\r\n"

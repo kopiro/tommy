@@ -1,1 +1,6 @@
-.gitignore
+.DS_Store
+node_modules/
+.test/
+scripts/
+.env
+.config.ext.json
