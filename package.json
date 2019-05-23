@@ -1,6 +1,6 @@
 {
   "name": "kopiro-tommy",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Web Assets converter and optimizer",
   "main": "tommy.js",
   "module": "tommy.js",
