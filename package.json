@@ -9,7 +9,7 @@
   },
   "scripts": {
     "publish": "./scripts/publish.sh",
-    "deps-macos": "./scripts/macos.sh"
+    "postinstall": "./postinstall.sh"
   },
   "repository": {
     "type": "git",
