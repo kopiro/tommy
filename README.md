@@ -3,7 +3,6 @@
 Tommy will process and optimize all your static assets ready for the web.
 
 [![npm version](http://img.shields.io/npm/v/kopiro-tommy.svg?style=flat)](https://npmjs.org/package/kopiro-tommy "View this project on npm")
-
 [![docker version](https://img.shields.io/docker/pulls/kopiro/tommy.svg)](https://hub.docker.com/r/kopiro/tommy)
 
 <img width="80%" src="render.gif" />
