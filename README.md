@@ -2,25 +2,68 @@
 
 Tommy will process and optimize all your static assets ready for the web.
 
+[![npm version](http://img.shields.io/npm/v/kopiro-tommy.svg?style=flat)](https://npmjs.org/package/kopiro-tommy "View this project on npm")
+[![docker version](https://img.shields.io/docker/pulls/kopiro/tommy.svg)](https://hub.docker.com/r/kopiro/tommy)
+
 <img width="80%" src="render.gif" />
 
-## Pass runtime options
+## Arguments
 
 - `--src` specify the source directory (where your assets are located)
 - `--dst` specify the destination directory (where your assets will be generated)
+
+### Optional argumenmts
+
 - `--force` regenerate all assets ignoring cache
 - `--config` specify a JSON file containing an extension to the configuration
-
 - `--webserver` will spawn an HTTP webserver that access via `POST /` a request to run
 - `--port` is the webserver port (default: 80)
-
 - `--watch` will enable a persistent watch over the src directory to detect instant file changes
 
-### ⚡️️️ Always set `--dst` option to an empty directory: this directory should only be used by Tommy because files in could be potentially deleted if Tommy is started with a weird configuration or a corrupted database ⚡️
+**⚡️️️ Always set `--dst` option to an empty directory: this directory should only be used by Tommy because files in could be potentially deleted if Tommy is started with a weird configuration or a corrupted database ⚡️**
+
+## How to: run with Docker
+
+The main advantage of using Tommy is that all dependencies used to process/convert entities are encapsulated into a docker image.
+
+For this reason, you should use the `docker run` command to use Tommy in the original way it was created.
+
+```sh
+docker run \
+-v "$(pwd)/test/src":/src \
+-v "$(pwd)/test/dst":/dst \
+-v "$(pwd)/config.json:/root/config.json" \
+kopiro/tommy:latest \
+--src /src \
+--dst /dst \
+--config /root/config.json
+```
+
+Explanation of mounts:
+
+- `-v "$(pwd)/test/src":/src` mount the source directory (where your assets are located) into container `/src`
+- `-v "$(pwd)/test/dst":/dst` mount the destination directory (where your assets will be generated) into container `/dst`
+- `-v "$(pwd)/config.json:/root/config.json"` mount your (optional) configuration JSON file into container `/root/config.json`
+
+### How to: run in MacOS
+
+You can also use the native NPM package on OSX.
+
+#### Installation
+
+```sh
+npm -g i kopiro-tommy
+```
+
+#### Run
+
+```sh
+tommy --src ./test/src --dst ./test/dst
+```
 
 ## Configuration
 
-If you pass to Tommy an additional JSON file, it will be merged with initial config.
+By providing a JSON file to `--config`, you configuration will be extended with the default one.
 
 ```sh
 tommy --config config.json
@@ -63,33 +106,33 @@ Example:
 ...
 ```
 
-| Key                        | Applicable to | Description                           | Enabled dy default |
-| -------------------------- | ------------- | ------------------------------------- | ------------------ |
-| processor.resize           | images        | various resized images                | true               |
-| processor.image            | images        | `imagemagick` processor               | true               |
-| processor.lazyLoadBlurried | images        | a blurry image                        | true               |
-| converter.webp             | images        | conversion to WEBP                    | true               |
-| tester.image               | images        | sample HTML page to test              | true               |
-| processor.jpg              | JPGs          | `jpegoptim` optimizer                 | true               |
-| processor.png              | PNGs          | `pngquant` optimizer                  | true               |
-| processor.gif              | GIFs          | `gifsicle` optimizer                  | true               |
-| processor.svg              | SVGs          | `svgo` optimizer                      | true               |
-| processor.poster           | videos        | poster image                          | true               |
-| processor.videoThumbs      | videos        | thumbnails extracted from video       | true               |
-| processor.favicon          | favicon       | generate all files needed for favicon | true               |
-| converter.webm             | videos        | conversion to WEBM                    | true               |
-| converter.h264_mp4         | videos        | conversion to H264 and MP4 container  | true               |
-| converter.av1_mp4          | videos        | conversion to AV1 and MP4 container   | true               |
-| converter.hevc_mp4         | videos        | conversion to HEVC and MP4 container  | true               |
-| tester.video               | videos        | sample HTML page to test              | true               |
-| converter.mp3              | audios        | conversion to MP3                     | true               |
-| converter.ttf              | fonts         | conversion to TTF                     | true               |
-| converter.otf              | fonts         | conversion to OTF                     | true               |
-| converter.eot              | fonts         | conversion to EOT                     | true               |
-| converter.svg              | fonts         | conversion to SVG                     | true               |
-| converter.woff             | fonts         | conversion to WOFF                    | true               |
-| converter.woff2            | fonts         | conversion to WOFF2                   | true               |
-| tester.font                | fonts         | sample HTML page to test              | true               |
+| Key                        | Applies to | Description                                                                                        | Enabled dy default |
+| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------- | ------------------ |
+| processor.resize           | images     | resize the image in differents formats                                                             | true               |
+| processor.image            | images     | optimize the image                                                                                 | true               |
+| processor.lazyLoadBlurried | images     | generates a very small blurried image that can be used before loading final image in lazy load.    | true               |
+| converter.webp             | images     | converts to WEBP format                                                                            | true               |
+| tester.image               | images     | generates a sample HTML page to test all differents formats                                        | true               |
+| processor.jpg              | JPGs       | optimizes the JPG using `jpegoptim`                                                                | true               |
+| processor.png              | PNGs       | optimizes the PNG using `pngquant`                                                                 | true               |
+| processor.gif              | GIFs       | optimizes the GIF using `gifsicle`                                                                 | true               |
+| processor.svg              | SVGs       | optimizes the SVG using `svgo`                                                                     | true               |
+| processor.poster           | videos     | generates a representative poster image from the video to use as picture before loading the video. | true               |
+| processor.videoThumbs      | videos     | generates N different thumbs from the video                                                        | true               |
+| processor.favicon          | favicon    | generates all images/icons needed in various browsers for the favicon.                             | true               |
+| converter.webm             | videos     | converts to WEBM format                                                                            | true               |
+| converter.h264_mp4         | videos     | converts to H264 using MP4 container                                                               | true               |
+| converter.av1_mp4          | videos     | converts to AV1 using MP4 container                                                                | true               |
+| converter.hevc_mp4         | videos     | converts to HEVC using MP4 container                                                               | true               |
+| tester.video               | videos     | generates a sample HTML page to test all differents formats                                        | true               |
+| converter.mp3              | audios     | converts to MP3 format                                                                             | true               |
+| converter.ttf              | fonts      | converts to TTF format                                                                             | true               |
+| converter.otf              | fonts      | converts to OTF format                                                                             | true               |
+| converter.eot              | fonts      | converts to EOT format                                                                             | true               |
+| converter.svg              | fonts      | converts to SVG format                                                                             | true               |
+| converter.woff             | fonts      | converts to WOFF format                                                                            | true               |
+| converter.woff2            | fonts      | converts to WOFF2 format                                                                           | true               |
+| tester.font                | fonts      | generates a sample HTML page to test all differents formats                                        | true               |
 
 ### `processor.resize`
 
@@ -97,7 +140,7 @@ Example:
 | ---------- | -------- | ------------------------------------------------- | ---------------------- |
 | dimensions | number[] | Dimensions of resized images in PX (longest side) | [200,400,800,1200]     |
 | quality    | number   | Quality of images                                 | 80                     |
-| suffix     | string   | Suffix to apply to new files                      | "-resized-${i}.${ext}" |
+| suffix     | string   | Suffix to Applies to new files                    | "-resized-${i}.${ext}" |
 
 ### `processor.image`
 
@@ -107,25 +150,25 @@ Example:
 
 ### `processor.videoThumbs`
 
-| Key     | Type   | Description                  | Default            |
-| ------- | ------ | ---------------------------- | ------------------ |
-| count   | number | How many thumbnails extract  | 5                  |
-| size    | number | Length of longest side       | 400                |
-| quality | number | Quality of image             | 80                 |
-| suffix  | string | Suffix to apply to new files | "-thumb-\${i}.jpg" |
+| Key     | Type   | Description                    | Default            |
+| ------- | ------ | ------------------------------ | ------------------ |
+| count   | number | How many thumbnails extract    | 5                  |
+| size    | number | Length of longest side         | 400                |
+| quality | number | Quality of image               | 80                 |
+| suffix  | string | Suffix to Applies to new files | "-thumb-\${i}.jpg" |
 
 ### `processor.lazyLoadBlurried`
 
-| Key    | Type   | Description                  | Default         |
-| ------ | ------ | ---------------------------- | --------------- |
-| size   | number | Length of longest side       | 10              |
-| suffix | string | Suffix to apply to new files | "-blurried.jpg" |
+| Key    | Type   | Description                    | Default         |
+| ------ | ------ | ------------------------------ | --------------- |
+| size   | number | Length of longest side         | 10              |
+| suffix | string | Suffix to Applies to new files | "-blurried.jpg" |
 
 ### `processor.poster`
 
-| Key    | Type   | Description                  | Default       |
-| ------ | ------ | ---------------------------- | ------------- |
-| suffix | string | Suffix to apply to new files | "-poster.jpg" |
+| Key    | Type   | Description                    | Default       |
+| ------ | ------ | ------------------------------ | ------------- |
+| suffix | string | Suffix to Applies to new files | "-poster.jpg" |
 
 ### `processor.favicon`
 
@@ -137,7 +180,7 @@ Example:
 | tileColor     | string | Color of the tile for Windows                                                           | "#336699"         |
 | themeColor    | string | Color of the theme for Chrome Mobile                                                    | "#336699"         |
 
-## convert.[webm,*_mp4]
+## convert.{webm,\*\_mp4}
 
 _These are the general settings used for video. You can override manually in every section_
 
@@ -175,41 +218,6 @@ _These are the general settings used for video. You can override manually in eve
 | Key        | Type   | Description                | Default   |
 | ---------- | ------ | -------------------------- | --------- |
 | videoCodec | string | The coded to use for video | "libx265" |
-
-## How to: run with Docker
-
-I suggest you to use with Docker to avoid installing all dependencies in your host.
-
-```sh
-docker run \
--v "$(pwd)/test/src":/src \
--v "$(pwd)/test/dst":/dst \
--v "$(pwd)/config.json:/root/config.json" \
-kopiro/tommy:latest \
---src /src \
---dst /dst \
---config /root/config.json
-```
-
-Explanation of mounts:
-
-- `-v "$(pwd)/test/src":/src` mount the source directory (where your assets are located) into container `/src`
-- `-v "$(pwd)/test/dst":/dst` mount the destination directory (where your assets will be generated) into container `/dst`
-- `-v "$(pwd)/config.json:/root/config.json"` mount your (optional) configuration JSON file into container `/root/config.json`
-
-## How to: run in MacOS
-
-Upfront, install dependencies by running `macos.sh`, then install with NPM:
-
-```sh
-npm -g i kopiro-tommy
-```
-
-Then run as a binary:
-
-```sh
-tommy --src ./test/src --dst ./test/dst
-```
 
 ## How: build locally Docker image
 
