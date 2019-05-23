@@ -210,7 +210,7 @@ _These are the general settings used for video. You can override manually in eve
 | pixelFormat | string | It uses full resolution for brightness and a smaller resolution for color.                                    | `"yuv420p"`    |
 | mapMetadata | string | Choose to keep/remove metadata                                                                                | `"-1"`         |
 | movFlags    | string | Movie flags to pass to ffmpeg                                                                                 | `"+faststart"` |
-| preset      | string | Will provide a certain encoding speed to compression ratio.                                                   | `"veryslow"`   |
+| preset      | string | Will provide a certain encoding speed to compression ratio.                                                   | `"medium"`     |
 
 ### converter.webm
 
