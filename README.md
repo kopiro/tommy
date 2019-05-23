@@ -106,33 +106,33 @@ Example:
 ...
 ```
 
-| Key                        | Applies to | Description                                                                                        | Enabled dy default |
-| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------- | ------------------ |
-| processor.resize           | images     | resize the image in differents formats                                                             | true               |
-| processor.image            | images     | optimize the image                                                                                 | true               |
-| processor.lazyLoadBlurried | images     | generates a very small blurried image that can be used before loading final image in lazy load.    | true               |
-| converter.webp             | images     | converts to WEBP format                                                                            | true               |
-| tester.image               | images     | generates a sample HTML page to test all differents formats                                        | true               |
-| processor.jpg              | JPGs       | optimizes the JPG using `jpegoptim`                                                                | true               |
-| processor.png              | PNGs       | optimizes the PNG using `pngquant`                                                                 | true               |
-| processor.gif              | GIFs       | optimizes the GIF using `gifsicle`                                                                 | true               |
-| processor.svg              | SVGs       | optimizes the SVG using `svgo`                                                                     | true               |
-| processor.poster           | videos     | generates a representative poster image from the video to use as picture before loading the video. | true               |
-| processor.videoThumbs      | videos     | generates N different thumbs from the video                                                        | true               |
-| processor.favicon          | favicon    | generates all images/icons needed in various browsers for the favicon.                             | true               |
-| converter.webm             | videos     | converts to WEBM format                                                                            | true               |
-| converter.h264_mp4         | videos     | converts to H264 using MP4 container                                                               | true               |
-| converter.av1_mp4          | videos     | converts to AV1 using MP4 container                                                                | true               |
-| converter.hevc_mp4         | videos     | converts to HEVC using MP4 container                                                               | true               |
-| tester.video               | videos     | generates a sample HTML page to test all differents formats                                        | true               |
-| converter.mp3              | audios     | converts to MP3 format                                                                             | true               |
-| converter.ttf              | fonts      | converts to TTF format                                                                             | true               |
-| converter.otf              | fonts      | converts to OTF format                                                                             | true               |
-| converter.eot              | fonts      | converts to EOT format                                                                             | true               |
-| converter.svg              | fonts      | converts to SVG format                                                                             | true               |
-| converter.woff             | fonts      | converts to WOFF format                                                                            | true               |
-| converter.woff2            | fonts      | converts to WOFF2 format                                                                           | true               |
-| tester.font                | fonts      | generates a sample HTML page to test all differents formats                                        | true               |
+| Key                        | Applies to | Description                                                                                        |
+| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------- |
+| processor.resize           | images     | resize the image in differents formats                                                             |
+| processor.image            | images     | optimize the image                                                                                 |
+| processor.lazyLoadBlurried | images     | generates a very small blurried image that can be used before loading final image in lazy load.    |
+| converter.webp             | images     | converts to WEBP format                                                                            |
+| tester.image               | images     | generates a sample HTML page to test all differents formats                                        |
+| processor.jpg              | JPGs       | optimizes the JPG using `jpegoptim`                                                                |
+| processor.png              | PNGs       | optimizes the PNG using `pngquant`                                                                 |
+| processor.gif              | GIFs       | optimizes the GIF using `gifsicle`                                                                 |
+| processor.svg              | SVGs       | optimizes the SVG using `svgo`                                                                     |
+| processor.poster           | videos     | generates a representative poster image from the video to use as picture before loading the video. |
+| processor.videoThumbs      | videos     | generates N different thumbs from the video                                                        |
+| processor.favicon          | favicon    | generates all images/icons needed in various browsers for the favicon.                             |
+| converter.webm             | videos     | converts to WEBM format                                                                            |
+| converter.h264_mp4         | videos     | converts to H264 using MP4 container                                                               |
+| converter.av1_mp4          | videos     | converts to AV1 using MP4 container                                                                |
+| converter.hevc_mp4         | videos     | converts to HEVC using MP4 container                                                               |
+| tester.video               | videos     | generates a sample HTML page to test all differents formats                                        |
+| converter.mp3              | audios     | converts to MP3 format                                                                             |
+| converter.ttf              | fonts      | converts to TTF format                                                                             |
+| converter.otf              | fonts      | converts to OTF format                                                                             |
+| converter.eot              | fonts      | converts to EOT format                                                                             |
+| converter.svg              | fonts      | converts to SVG format                                                                             |
+| converter.woff             | fonts      | converts to WOFF format                                                                            |
+| converter.woff2            | fonts      | converts to WOFF2 format                                                                           |
+| tester.font                | fonts      | generates a sample HTML page to test all differents formats                                        |
 
 ### `processor.resize`
 
