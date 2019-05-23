@@ -8,7 +8,7 @@
     "tommy": "cli.js"
   },
   "scripts": {
-    "publish": "./scripts/publish.sh",
+    "docker-publish": "./scripts/docker-publish.sh",
     "postinstall": "./postinstall.sh"
   },
   "repository": {
