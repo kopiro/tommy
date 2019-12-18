@@ -16,35 +16,7 @@ RUN apt-get -y install && \
 
 RUN npm i -g svgo
 
-RUN apt-get -y install imagemagick jpegoptim pngquant gifsicle webp
-
-# ------- FONT FORGE ---------
-
-RUN apt-get -y install autotools-dev libjpeg-dev libtiff5-dev libpng-dev libgif-dev libxt-dev libfreetype6-dev autoconf automake libtool libltdl7-dev libxml2-dev libuninameslist-dev libspiro-dev python-dev libpango1.0-dev libcairo2-dev chrpath unifont 
-
-RUN git clone https://github.com/fontforge/libspiro.git /usr/share/libspiro && \
-    cd /usr/share/libspiro && \
-    autoreconf -i && \
-    automake --foreign -Wall && \
-    ./configure && \
-    make && \
-    make install
-
-RUN git clone https://github.com/fontforge/libuninameslist.git /usr/share/libuninameslist && \
-    cd /usr/share/libuninameslist && \
-    autoreconf -i && \
-    automake --foreign && \
-    ./configure && \
-    make && \
-    make install
-
-RUN git clone https://github.com/fontforge/fontforge.git /usr/share/fontforge && \
-    cd /usr/share/fontforge && \
-    ./bootstrap && \
-    ./configure && \
-    make && \
-    make install && \
-    ldconfig
+RUN apt-get -y install imagemagick jpegoptim pngquant gifsicle webp fontforge
 
 # ------- FFMPEG ---------
 
